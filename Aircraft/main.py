@@ -1,2 +1,4 @@
 from Aircraft.Fok100 import Coeff
-c = Coeff()
+
+if __name__ == '__main__':
+    c = Coeff()
