@@ -1,6 +1,6 @@
 
 
-class Coeff():
+class Coeff:
     def __init__(self):
         self.url = 'https://customer-janes-com.tudelft.idm.oclc.org/entityprofile/equipment/Equipment_12900/specifications?explorerState=7a3d6ad9-907d-4673-ab0d-8573805a660e&rootEntity=Equipment_12900'
         ###Tail
@@ -41,6 +41,11 @@ class Coeff():
         self.T = 61607*2 #Thrust N
         self.WS = self.MTOW / self.S #Max wing loading = kg/m2
         self.WT = self.MTOW / self.T #Thrust loading = kg/N
+
+    @property
+    def MAC(self):
+        t = self.ct / self.cr #taper ratio
+        return self.cr * 2/3 * ((1 + t + t**2)/(1+t))
 
 
 
