@@ -14,5 +14,4 @@ data = {'Wing': [0.1477, np.nan], 'Htail':[0.0137, np.nan], 'Vtail': [0.0095, np
         'fuselage': [0.1929, 0.47*Fokker.f_l], 'ngear':[0.0047, np.nan], 'lgear': [0.0271, np.nan],
         'nacelle':[0.0183, np.nan], 'Prop':[0.0912, np.nan]}
 cgoew = cg_calc(data)
-print(cgoew)
 
