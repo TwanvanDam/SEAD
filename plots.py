@@ -5,7 +5,7 @@ def piechart(data, plot):
     percentages = list(data.values())
 
     plt.figure()
-    plt.pie(percentages, labels=categories, autopct='%1.1f%%')
+    plt.pie(percentages, labels=categories, autopct='%1.1f%%', startangle=90)
     plt.axis('equal')
     plt.title('Distribution of weights')
     total = sum(percentages)

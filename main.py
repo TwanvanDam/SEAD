@@ -6,7 +6,7 @@ import numpy as np
 plot= False
 Fokker = Coeff()
 ### Pie chart
-data = {'OEW': 30,'Fuel': 20,'Payload': 15}
+data = {'OEW': Fokker.OEW,'Fuel': Fokker.OEW - Fokker.MP,'Payload': Fokker.MP}
 piechart(data, plot)
 
 ### CG calculation
