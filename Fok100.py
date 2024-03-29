@@ -15,6 +15,8 @@ class Coeff:
         self.c = self.b / self.A
         self.cr = 5.28 #chord root length
         self.ct = 1.26 #chord tip length
+        self.Labdaquart = 17.45
+        self.LabdaLead = 21.2
 
         ##Tail
         self.b_t = 10.04 #Tail span
@@ -46,6 +48,12 @@ class Coeff:
     def MAC(self):
         t = self.ct / self.cr #taper ratio
         return self.cr * 2/3 * ((1 + t + t**2)/(1+t))
+
+    @property
+    def MACy(self):
+        t = self.ct / self.cr
+        print(t)
+        return self.b/6 + (1+2 * t) / (1 + t)
 
 
 
