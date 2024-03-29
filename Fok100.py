@@ -1,4 +1,4 @@
-
+import numpy as np
 
 class Coeff:
     def __init__(self):
@@ -44,6 +44,14 @@ class Coeff:
         self.WS = self.MTOW / self.S #Max wing loading = kg/m2
         self.WT = self.MTOW / self.T #Thrust loading = kg/N
 
+        ##Cargo
+        self.maxc = 900 #kg virgin australia
+        self.massp = self.MP - self.maxc
+        self.holdf = 9.5 #volumes hold m3
+        self.holda = 7.2
+        self.cargof = self.maxc * self.holdf / (self.holdf + self.holda)
+        self.cargoa = self.maxc * self.holda / (self.holdf + self.holda)
+
     @property
     def MAC(self):
         t = self.ct / self.cr #taper ratio
@@ -52,8 +60,9 @@ class Coeff:
     @property
     def MACy(self):
         t = self.ct / self.cr
-        print(t)
         return self.b/6 + (1+2 * t) / (1 + t)
 
-
-
+    @property
+    def LEMAC(self):
+        nose_to_LECR = 10
+        return nose_to_LECR + np.tan(np.radians(self.LabdaLead)) * self.MACy
