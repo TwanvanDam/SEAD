@@ -3,11 +3,9 @@ from plots import piechart
 
 def run(plotting):
     Fokker = Coeff()
-    data = {
-        'OEW': 30,
-        'Fuel': 20,
-        'Payload': 15,
-    }
+
+    ### Pie chart
+    data = {'OEW': 30,'Fuel': 20,'Payload': 15}
     piechart(data, plotting)
 
 
