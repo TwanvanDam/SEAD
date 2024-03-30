@@ -21,5 +21,6 @@ cg_wing = cg_calc(wing_group)
 cg_fuselage = cg_calc(fuselage_group)
 
 cg_OEW = cg_calc({**wing_group, **fuselage_group})
+print(cg_OEW, Fokker.dw + Fokker.wb)
 
 
