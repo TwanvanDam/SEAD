@@ -89,6 +89,17 @@ def calc_potato_cargo(cg_0:float, OEW_0:float, Wcargo:float, cargo_hold_location
     return cg_cargo[-1], OEW_cargo[-1], min_cg, max_cg
 
 def calc_potato_fuel(cg_0:float, OEW:float, Wfuel, tank_location, X_lemac:float=0, mac:float=1, plot:bool=True) -> tuple:
+    """This function calculates the loading diagram of the fuel with the given inputs and returns the minimum and maximum cg locations.
+    :param cg_0: initial cg location at OEW measured from front of aircraft
+    :param OEW: Operating Empty Weight
+    :param Wfuel: Tuple with the weights of the fuel tanks
+    :param tank_location: Tuple with the locations of the fuel tanks measured from front of aircraft
+    :param X_lemac: Distance from nose to leading edge of mean aerodynamic chord
+    :param mac: Mean aerodynamic chord if mac=1 and X_lemac=0, the cg locations will be in meters from the nose
+    :param plot: Boolean to determine if a plot should be displayed
+    :return: Tuple with the minimum and maximum cg locations in the global coordinate system
+    """
+
     min_cg = np.inf
     max_cg = -np.inf
     OEW_fuel = [OEW]
@@ -160,16 +171,16 @@ if __name__ == "__main__":
     Wcargo = Fokker.maxc
     Wfuel = Fokker.MRW - Fokker.MZFW
 
-    tank_location = 18
+
 
     cargo_hold_locations = (5,20)
     cargo_volumes = (Fokker.holdf, Fokker.holda)
 
-    X_lemac = 16.0
-    mac = 2
+    X_lemac = 16.13
+    mac = 4
+    tank_location = X_lemac+ 0.5 * mac
 
-    calc_potato(cg_0, OEW, Wcargo, cargo_hold_locations, cargo_volumes, Wpass,first_row,tank_location,Wfuel,X_lemac, mac,True)
-
+    calc_potato(cg_0, OEW, Wcargo, cargo_hold_locations, cargo_volumes, Wpass, first_row, tank_location, Wfuel, X_lemac, mac, plot=True)
 
 
 
