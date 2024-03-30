@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from Fok100 import Coeff
-from cgfunc import xcg_new
+import cgfunc
 
 def calc_potato_pass(cg_0:float, OEW_0:float, Wpass:float, first_row:float, X_lemac:float=0, mac:float=1, plot:bool=True, boarding_order:tuple=("windows", "aisles", "middle"), n_rows:int=22, pitch:int=32) -> tuple:
     """This function calculates the loading diagram of the passengers with the given inputs and returns the minimum and maximum cg locations.
@@ -15,7 +15,7 @@ def calc_potato_pass(cg_0:float, OEW_0:float, Wpass:float, first_row:float, X_le
     :param boarding_order: Tuple with the order of boarding the passengers, by default it is ("windows", "aisles", "middle")
     :param n_rows: Number of rows in the aircraft, by default it is 22
     :param pitch: Distance between rows, by default it is 32 inch
-    :return: Tuple with the minimum and maximum cg locations
+    :return: Tuple with the minimum and maximum cg locations in the global coordinate system
     """
     min_cg = np.inf
     max_cg = -np.inf
@@ -39,12 +39,12 @@ def calc_potato_pass(cg_0:float, OEW_0:float, Wpass:float, first_row:float, X_le
                 else:
                     rows = range(n_rows - 1, -1, -1)
             for i in rows:
-                cg_pax.append(xcg_new(OEW_pax[-1], n_pax_row * Wpass, cg_pax[-1], first_row + i * pitch * 0.0254))
+                cg_pax.append(cgfunc.xcg_new(OEW_pax[-1], n_pax_row * Wpass, cg_pax[-1], first_row + i * pitch * 0.0254))
                 OEW_pax.append(n_pax_row*Wpass + OEW_pax[-1])
             min_cg = np.min([min_cg, *cg_pax])
             max_cg = np.max([max_cg, *cg_pax])
             if plot:
-                plt.plot((np.array(cg_pax)-X_lemac)/mac, OEW_pax,".-", label=dir+ " " + column)
+                plt.plot(cgfunc.convert_global_xlemac(cg_pax,X_lemac,mac), OEW_pax,".-", label=dir+ " " + column)
     return cg_pax[-1], OEW_pax[-1], min_cg, max_cg
 
 def calc_potato_cargo(cg_0:float, OEW_0:float, Wcargo:float, cargo_hold_locations:tuple, cargo_volumes:tuple, X_lemac:float=0, mac:float=1, plot:bool=True) -> tuple:
@@ -57,7 +57,7 @@ def calc_potato_cargo(cg_0:float, OEW_0:float, Wcargo:float, cargo_hold_location
     :param X_lemac: Distance from nose to leading edge of mean aerodynamic chord
     :param mac: Mean aerodynamic chord if mac=1 and X_lemac=0, the cg locations will be in meters from the nose
     :param plot: Boolean to determine if a plot should be displayed
-    :return: Tuple with the minimum and maximum cg locations
+    :return: Tuple with the minimum and maximum cg locations in the global coordinate system
     """
 
     total_volume = sum(cargo_volumes)
@@ -76,16 +76,16 @@ def calc_potato_cargo(cg_0:float, OEW_0:float, Wcargo:float, cargo_hold_location
         for cargo_weight, cargo_hold_location in cargo_zip:
             OEW_cargo = [OEW_cargo[-1]]
             cg_cargo = [cg_cargo[-1]]
-            cg_cargo.append(xcg_new(OEW_cargo[-1],cargo_weight , cg_cargo[-1],cargo_hold_location))
+            cg_cargo.append(cgfunc.xcg_new(OEW_cargo[-1],cargo_weight , cg_cargo[-1],cargo_hold_location))
             OEW_cargo.append(OEW_cargo[-1]+cargo_weight)
             min_cg = np.min([min_cg, *cg_cargo])
             max_cg = np.max([max_cg, *cg_cargo])
             if plot:
                 if i:
-                    line, = plt.plot((np.array(cg_cargo)-X_lemac)/mac,OEW_cargo, label=f"cargo {dir}")
+                    line, = plt.plot(cgfunc.convert_global_xlemac(cg_cargo,X_lemac,mac),OEW_cargo, label=f"cargo {dir}")
                     i = 0
                 else:
-                    plt.plot((np.array(cg_cargo)-X_lemac)/mac, OEW_cargo, line.get_color())
+                    plt.plot(cgfunc.convert_global_xlemac(cg_cargo,X_lemac,mac), OEW_cargo, line.get_color())
     return cg_cargo[-1], OEW_cargo[-1], min_cg, max_cg
 
 def calc_potato(cg_0:float, OEW:float, Wcargo:float, cargo_hold_locations:tuple, cargo_volumes:tuple, Wpass:float, first_row:float,X_lemac:float=0, mac:float=1,plot:bool=True):
@@ -100,7 +100,7 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:float, cargo_hold_locations:tuple,
     :param X_lemac: Distance from nose to leading edge of mean aerodynamic chord
     :param mac: Mean aerodynamic chord if mac=1 and X_lemac=0, the cg locations will be in meters from the nose
     :param plot: Boolean to determine if a plot should be displayed
-    :return: Tuple with the minimum and maximum cg locations
+    :return: Tuple with the minimum and maximum cg locations in the local coordinate system
     """
 
     cg_cargo, OEW_cargo, min_cg_cargo, max_cg_cargo = calc_potato_cargo(cg_0,OEW, Wcargo, cargo_hold_locations, cargo_volumes,X_lemac,mac, plot)
@@ -114,6 +114,7 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:float, cargo_hold_locations:tuple,
         plt.ylabel("mass [kg]")
         plt.xlabel(r"$x_{cg}$ [mac]")
         plt.legend()
+        plt.savefig("./Plots/potato.png")
         plt.show()
     return min_cg, max_cg
 
@@ -144,7 +145,8 @@ if __name__ == "__main__":
 
     X_lemac = 16.0
     mac = 2
-    print(calc_potato(cg_0, OEW, Wcargo, cargo_hold_locations, cargo_volumes, Wpass,first_row,X_lemac, mac,False))
+
+    calc_potato(cg_0, OEW, Wcargo, cargo_hold_locations, cargo_volumes, Wpass,first_row,X_lemac, mac,True)
 
 
 

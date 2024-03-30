@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
 
 def piechart(data, plot):
-    categories = list(data.keys())
-    percentages = list(data.values())
+    categories, percentages = list(data.keys()) ,list(data.values())
 
     plt.figure()
     plt.pie(percentages, labels=categories, autopct='%1.1f%%', startangle=90)
