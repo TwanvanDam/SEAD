@@ -11,7 +11,7 @@ class Coeff:
         self.dw = 3.69  # Nose wheel distance
         self.dwing = 14.25  # Distance nose Cr wing
         self.de = 22.4 #Distance front engine
-        self.ln = 4.71
+        self.ln = 4.71 #length nacelle
 
         ###Wing
         self.b = 28.08  # wingspan [m]
