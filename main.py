@@ -11,12 +11,15 @@ piechart(data, plot)
 
 ### CG calculation
 ### I & II & III
-wing_group = {'Wing': [0.1477, np.nan], 'lgear': [0.0271, np.nan]}
-fuselage_group =  {'Htail':[0.0137, np.nan], 'Vtail': [0.0095, np.nan],
-                'fuselage': [0.1929, 0.47*Fokker.f_l], 'ngear':[0.0047, np.nan],
-                'nacelle':[0.0183, np.nan], 'Prop':[0.0912, np.nan]}
+cg_chord_factor = 0.4
+cg_engine_factor = 0.5
+wing_group = {'Wing': [0.1477, Fokker.LEMAC + cg_chord_factor * Fokker.MAC], 'lgear': [0.0271, Fokker.dw + Fokker.wb]}
+fuselage_group =  {'Htail':[0.0137, Fokker.LEMACH + cg_chord_factor* Fokker.MACH], 'Vtail': [0.0095, Fokker.LEMACV + cg_chord_factor* Fokker.MACV],
+                'fuselage': [0.1929, 0.47*Fokker.f_l], 'ngear':[0.0047, Fokker.dw],
+                'nacelle':[0.0183, Fokker.de + cg_engine_factor * Fokker.ln], 'Prop':[0.0912, Fokker.de + cg_engine_factor * Fokker.ln]}
 cg_wing = cg_calc(wing_group)
 cg_fuselage = cg_calc(fuselage_group)
 
 cg_OEW = cg_calc({**wing_group, **fuselage_group})
+
 
