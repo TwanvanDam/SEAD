@@ -19,7 +19,14 @@ class Coeff:
         self.LabdaLead = 21.2
 
         ##Tail
-        self.b_t = 10.04 #Tail span
+        self.b_ht = 10.04 #Tail span
+        self.cr_ht = 3.1
+        self.ct_ht = 1.45
+        self.LabdaLeadV = 25
+        self.b_vt = 3.555
+        self.cr_vt = 4.58
+        self.ct_vt = 3.215
+        self.LabdaLeadH = 44
         self.Svt = 10 #fin area
         self.Sht = 17.76 #Tailplane area
 
@@ -66,3 +73,33 @@ class Coeff:
     def LEMAC(self):
         nose_to_LECR = 10
         return nose_to_LECR + np.tan(np.radians(self.LabdaLead)) * self.MACy
+
+    @property
+    def MACH(self):
+        t = self.ct_ht / self.cr_ht  # taper ratio
+        return self.cr_ht * 2 / 3 * ((1 + t + t ** 2) / (1 + t))
+
+    @property
+    def MACyH(self):
+        t = self.ct_ht / self.cr_ht
+        return self.b_ht / 6 + (1 + 2 * t) / (1 + t)
+
+    @property
+    def LEMACH(self):
+        nose_to_LECRH = 10
+        return nose_to_LECRH + np.tan(np.radians(self.LabdaLeadH)) * self.MACyH
+
+    @property
+    def MACV(self):
+        t = self.ct_vt / self.cr_vt  # taper ratio
+        return self.cr_vt * 2 / 3 * ((1 + t + t ** 2) / (1 + t))
+
+    @property
+    def MACyV(self):
+        t = self.ct_vt / self.cr_vt
+        return self.b_vt / 6 + (1 + 2 * t) / (1 + t)
+
+    @property
+    def LEMACV(self):
+        nose_to_LECRV = 10
+        return nose_to_LECRV + np.tan(np.radians(self.LabdaLeadV)) * self.MACyV
