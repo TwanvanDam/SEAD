@@ -26,7 +26,7 @@ class Coeff:
         self.b_vt = 3.555
         self.cr_vt = 4.58
         self.ct_vt = 3.215
-        self.LabdaLeadH = 44
+        self.LabdaLeadH = 45
         self.Svt = 10 #fin area
         self.Sht = 17.76 #Tailplane area
 
