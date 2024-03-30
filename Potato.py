@@ -88,7 +88,25 @@ def calc_potato_cargo(cg_0:float, OEW_0:float, Wcargo:float, cargo_hold_location
                     plt.plot(cgfunc.convert_global_xlemac(cg_cargo,X_lemac,mac), OEW_cargo, line.get_color())
     return cg_cargo[-1], OEW_cargo[-1], min_cg, max_cg
 
-def calc_potato(cg_0:float, OEW:float, Wcargo:float, cargo_hold_locations:tuple, cargo_volumes:tuple, Wpass:float, first_row:float,X_lemac:float=0, mac:float=1,plot:bool=True):
+def calc_potato_fuel(cg_0:float, OEW:float, Wfuel, tank_location, X_lemac:float=0, mac:float=1, plot:bool=True) -> tuple:
+    min_cg = np.inf
+    max_cg = -np.inf
+    OEW_fuel = [OEW]
+    cg_fuel = [cg_0]
+    if (type(Wfuel) != tuple) & (type(tank_location) != tuple):
+        Wfuel = [Wfuel]
+        tank_location = [tank_location]
+    for tank_weight, location in zip(Wfuel, tank_location):
+        cg_fuel.append(cgfunc.xcg_new(OEW_fuel[-1], tank_weight, cg_fuel[-1], location))
+        OEW_fuel.append(OEW_fuel[-1] + tank_weight)
+        min_cg = np.min([min_cg, *cg_fuel])
+        max_cg = np.max([max_cg, *cg_fuel])
+        if plot:
+            plt.plot(cgfunc.convert_global_xlemac(cg_fuel,X_lemac,mac), OEW_fuel, label="fuel")
+    return cg_fuel[-1], OEW_fuel[-1], min_cg, max_cg
+
+
+def calc_potato(cg_0:float, OEW:float, Wcargo:float, cargo_hold_locations:tuple, cargo_volumes:tuple, Wpass:float, first_row:float,tank_location:tuple,Wfuel:tuple ,X_lemac:float=0, mac:float=1,plot:bool=True):
     """This function calculates the loading diagram of the aircraft with the given inputs and returns the minimum and maximum cg locations.
     :param cg_0: initial cg location at OEW measured from front of aircraft
     :param OEW: Operating Empty Weight
@@ -104,9 +122,10 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:float, cargo_hold_locations:tuple,
     """
 
     cg_cargo, OEW_cargo, min_cg_cargo, max_cg_cargo = calc_potato_cargo(cg_0,OEW, Wcargo, cargo_hold_locations, cargo_volumes,X_lemac,mac, plot)
-    cg_0, OEW, min_cg_pass, max_cg_pass = calc_potato_pass(cg_cargo, OEW_cargo, Wpass, first_row,X_lemac, mac, plot)
-    min_cg = (min(min_cg_cargo,min_cg_pass)-X_lemac)/mac
-    max_cg = (max(max_cg_pass,max_cg_cargo)-X_lemac)/mac
+    cg_pass, OEW_pass, min_cg_pass, max_cg_pass = calc_potato_pass(cg_cargo, OEW_cargo, Wpass, first_row,X_lemac, mac, plot)
+    cg_fuel, OEW_fuel, min_cg_fuel, max_cg_fuel = calc_potato_fuel(cg_pass, OEW_pass, Wfuel, tank_location,X_lemac, mac, plot)
+    min_cg = (min(min_cg_cargo,min_cg_pass, min_cg_fuel)-X_lemac)/mac
+    max_cg = (max(max_cg_pass,max_cg_cargo, max_cg_fuel)-X_lemac)/mac
     if plot:
         plt.grid()
         plt.axvline(min_cg, color='k')
@@ -114,7 +133,7 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:float, cargo_hold_locations:tuple,
         plt.ylabel("mass [kg]")
         plt.xlabel(r"$x_{cg}$ [mac]")
         plt.legend()
-        plt.savefig("./Plots/potato.png")
+        plt.savefig("./Plots/potato.pdf")
         plt.show()
     return min_cg, max_cg
 
@@ -139,14 +158,17 @@ if __name__ == "__main__":
     Wpass_tot = Fokker.MP - Fokker.maxc
     Wpass = Wpass_tot / n_seats
     Wcargo = Fokker.maxc
+    Wfuel = Fokker.MRW - Fokker.MZFW
 
-    cargo_hold_locations = (8, 20)
-    cargo_volumes = (7, 3)
+    tank_location = 18
+
+    cargo_hold_locations = (5,20)
+    cargo_volumes = (Fokker.holdf, Fokker.holda)
 
     X_lemac = 16.0
     mac = 2
 
-    calc_potato(cg_0, OEW, Wcargo, cargo_hold_locations, cargo_volumes, Wpass,first_row,X_lemac, mac,True)
+    calc_potato(cg_0, OEW, Wcargo, cargo_hold_locations, cargo_volumes, Wpass,first_row,tank_location,Wfuel,X_lemac, mac,True)
 
 
 
