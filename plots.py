@@ -1,13 +1,12 @@
 import matplotlib.pyplot as plt
 
 def piechart(data, plot):
-    categories = list(data.keys())
-    percentages = list(data.values())
+    categories, weights = list(data.keys()) ,list(data.values())
 
     plt.figure()
-    plt.pie(percentages, labels=categories, autopct='%1.1f%%', startangle=90)
+    plt.pie(weights, labels=categories, autopct=lambda p: '{:,.0f} [kg]  \n {:.1f}%'.format((p / 100) * sum(weights), p), startangle=90)
     plt.axis('equal')
     plt.title('Distribution of weights')
-    total = sum(percentages)
+    plt.savefig("./Plots/piechart.pdf")
     if plot:
         plt.show()
