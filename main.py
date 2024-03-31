@@ -13,10 +13,11 @@ piechart(data, plot)
 ### I & II & III
 cg_chord_factor = 0.4
 cg_engine_factor = 0.5
-wing_group = {'Wing': [0.1477, Fokker.LEMAC + cg_chord_factor * Fokker.MAC], 'lgear': [0.0271, Fokker.dw + Fokker.wb]}
-fuselage_group =  {'Htail':[0.0137, Fokker.LEMACH + cg_chord_factor* Fokker.MACH], 'Vtail': [0.0095, Fokker.LEMACV + cg_chord_factor* Fokker.MACV],
-                'fuselage': [0.1929, 0.47*Fokker.f_l], 'ngear':[0.0047, Fokker.dw],
-                'nacelle':[0.0183, Fokker.de + cg_engine_factor * Fokker.ln], 'Prop':[0.0912, Fokker.de + cg_engine_factor * Fokker.ln]}
+m = Fokker.MTOW
+wing_group = {'Wing': [0.1477*m, Fokker.LEMAC + cg_chord_factor * Fokker.MAC], 'lgear': [0.0271*m, Fokker.dw + Fokker.wb]}
+fuselage_group =  {'Htail':[0.0137*m, Fokker.LEMACH + cg_chord_factor* Fokker.MACH], 'Vtail': [0.0095*m, Fokker.LEMACV + cg_chord_factor* Fokker.MACV],
+                'fuselage': [0.1929*m, 0.47*Fokker.f_l], 'ngear':[0.0047*m, Fokker.dw],
+                'nacelle':[0.0183*m, Fokker.de + cg_engine_factor * Fokker.ln], 'Prop':[0.0912*m, Fokker.de + cg_engine_factor * Fokker.ln]}
 cg_wing = cg_calc(wing_group)
 cg_fuselage = cg_calc(fuselage_group)
 

@@ -139,8 +139,8 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:float, cargo_hold_locations:tuple,
     max_cg = (max(max_cg_pass,max_cg_cargo, max_cg_fuel)-X_lemac)/mac
     if plot:
         plt.grid()
-        plt.axvline(min_cg, color='k')
-        plt.axvline(max_cg, color='k')
+        plt.axvline(min_cg - 0.02, color='k')
+        plt.axvline(max_cg + 0.02, color='k')
         plt.ylabel("mass [kg]")
         plt.xlabel(r"$x_{cg}$ [mac]")
         plt.legend()

@@ -8,10 +8,10 @@ class Coeff:
         self.f_l = 32.5  # fuselage length [m]
         self.wb = 14.01  # Wheelbase [m]
         self.wt = 5.04  # wheeltrack [m]
-        self.dw = 3.69  # Nose wheel distance
+        self.dw = 3.75  # Nose wheel distance
         self.dwing = 14.25  # Distance nose Cr wing
-        self.de = 22.4 #Distance front engine
-        self.ln = 4.71 #length nacelle
+        self.de = 21.9  # Distance front engine
+        self.ln = 4.71  # length nacelle
 
         ###Wing
         self.b = 28.08  # wingspan [m]
@@ -20,18 +20,17 @@ class Coeff:
         self.c = self.b / self.A
         self.cr = 5.28  # chord root length
         self.ct = 1.26  # chord tip length
-        self.Labdaquart = 17.45
-        self.LabdaLead = 21.2
+        self.LabdaLead = 20.2
 
         ##Tail
         self.b_ht = 10.04  # Tail span
-        self.cr_ht = 3.095
-        self.ct_ht = 1.45
-        self.LabdaLeadH = 32
-        self.b_vt = 3.550
-        self.cr_vt = 4.57
-        self.ct_vt = 3.21
-        self.LabdaLeadV = 42
+        self.cr_ht = 3.14
+        self.ct_ht = 1.26
+        self.LabdaLeadH = 31.3
+        self.b_vt = 3.75
+        self.cr_vt = 4.25
+        self.ct_vt = 3.32
+        self.LabdaLeadV = 42.1
         self.Svt = 10  # fin area
         self.Sht = 17.76  # Tailplane area
 
@@ -74,7 +73,7 @@ class Coeff:
 
     @property
     def LEMAC(self):
-        nose_to_LECR = 14.25
+        nose_to_LECR = 13.7
         return nose_to_LECR + np.tan(np.radians(self.LabdaLead)) * self.MACy
 
     @property
@@ -88,7 +87,7 @@ class Coeff:
 
     @property
     def LEMACH(self):
-        nose_to_LECRH = 31.8
+        nose_to_LECRH = 31.3
         return nose_to_LECRH + np.tan(np.radians(self.LabdaLeadH)) * self.MACyH
 
     @property
@@ -102,5 +101,5 @@ class Coeff:
 
     @property
     def LEMACV(self):
-        nose_to_LECRV = 27.82
+        nose_to_LECRV = 27.8
         return nose_to_LECRV + np.tan(np.radians(self.LabdaLeadV)) * self.MACyV
