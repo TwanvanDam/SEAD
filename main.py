@@ -1,12 +1,13 @@
 from Fok100 import Coeff
 from plots import piechart
 from cgfunc import cg_calc
+from Potato import calc_potato
 import numpy as np
 
 plot= False
 Fokker = Coeff()
 ### Pie chart
-data = {'OEW': Fokker.OEW,'Fuel': Fokker.OEW - Fokker.MP,'Payload': Fokker.MP} #how is fuel weight OEW - Wpayload
+data = {'OEW': Fokker.OEW,'Fuel': Fokker.MTOW- Fokker.MP,'Payload': Fokker.MP} #how is fuel weight OEW - Wpayload
 piechart(data, plot)
 
 ### CG calculation
@@ -22,6 +23,12 @@ cg_wing = cg_calc(wing_group)
 cg_fuselage = cg_calc(fuselage_group)
 
 cg_OEW = cg_calc({**wing_group, **fuselage_group})
-print(cg_OEW, Fokker.dw + Fokker.wb)
+
+
+#TODO below values guessed
+cargo_hold_locations = (5,20)
+first_row = 6.7
+tank_location = Fokker.LEMAC + 0.5 * Fokker.MAC
+calc_potato(cg_OEW, Fokker.OEW, Fokker.maxc, cargo_hold_locations, (Fokker.holdf, Fokker.holda),Fokker.massp/109,first_row, tank_location, Fokker.MTOW- Fokker.MP, Fokker.LEMAC, Fokker.MAC, plot=plot)
 
 
