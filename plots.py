@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from Fok100 import Coeff
 
 def piechart(data, plot):
     categories, weights = list(data.keys()) ,list(data.values())
@@ -24,11 +25,16 @@ def control_stability(x_range, control, stability, stability_static_margin):
     plt.legend()
     plt.show()
 
+def stability(c: Coeff):
+    x = np.arange(0, 1, 0.01)
+    a = 1 / (c.C_L_alpha_h() / c.C_L_alpha_Ah(c.C_L_alpha_w()) * (1-c.de_dalpha(c.sweep(0.25), c.C_L_alpha_w())) * c.l_h/c.MAC * c.Vh_V_square())
+    y  =  a * x - (c.x_ac(0.29, c.C_L_alpha_Ah(c.C_L_alpha_w())) - 0.05) * a
+    return y
 
 if __name__ == "__main__":
-    x = np.arange(0.35, 0.75, 0.01)
-    stability = -1.2 + 3*x
+    x = np.arange(0, 1, 0.01)
+    # stability = -1.2 + 3*x
     control = 1.5 - 2*x
     stability_static_margin = 0.05
+    control_stability(x, control, stability(Coeff(0.77)), stability_static_margin)
 
-    control_stability(x, control, stability, stability_static_margin)

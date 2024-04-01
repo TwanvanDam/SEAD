@@ -238,7 +238,7 @@ class Coeff:
 
     def Vh_V_square(self):
         """Tail wing speed ratio obtained from AE3211 lecture 6"""
-        return 1
+        return 1**2
 
     def C_L_alpha_w(self, eta=0.95):
         """Lift rate coefficient of the wing obtained from AE2111 - II course aircraft lecture 2
