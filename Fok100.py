@@ -31,7 +31,7 @@ class Coeff:
         self.ct = 1.26  # chord tip length
         self.taper = self.ct / self.cr # taper ratio
         self.LabdaLead = 20.2 # Leading edge sweep angle
-        #self.l_fn = np.nan # nose to start wing length
+        self.m_tv = 6.06 / (self.b/2)  # Distance between the horizontal tail and the vortex shed plane, which can be approximated with the plane from the wing root chord
 
         ##Tail
         self.b_ht = 10.04  # Tail span
@@ -211,7 +211,7 @@ class Coeff:
             raise ValueError("Not all values are defined")
         return result
 
-    def de_dalpha(self, sweep25, m_tv, C_L_alpha_w):
+    def de_dalpha(self, sweep25, C_L_alpha_w):
         """downwash effect of the wing on the tail obtained from AE3211 lecture 6
         :param sweep25: 25% sweep angle of the wing in radians
         :param l_h: length from tail to wing
@@ -223,12 +223,13 @@ class Coeff:
         l_h = self.l_h
         b = self.b
         A = self.A
+        m_tv = self.m_tv
 
         r = l_h / (b / 2)
         Kel = ((0.1124 + 0.1265 * sweep25 + 0.1766 * sweep25 ** 2) / (r ** 2)) + (0.1024 / r) + 2
         Kel0 = (0.1124 / (r ** 2)) + (0.1024 / r) + 2
-        deda = Kel / Kel0 * ((r / (r ** 2 + m_tv ** 2)) * (0.4876 / np.sqrt(r ** 2 + 0.6319 + m_tv ** 2)) +
-                             (1 + ((r ** 2) / (r ** 2) + 0.7915 + 5.0734 * m_tv ** 2) ** 0.3113) * (
+        deda = (Kel / Kel0) * ((r / (r ** 2 + m_tv ** 2)) * (0.4876 / np.sqrt(r ** 2 + 0.6319 + (m_tv ** 2))) +
+                             (1 + ((r ** 2) / ((r ** 2) + 0.7915 + 5.0734 * m_tv ** 2)) ** 0.3113) * (
                                          1 - np.sqrt((m_tv ** 2) / (1 + m_tv ** 2)))
                              * (C_L_alpha_w / (np.pi * A)))
         if np.isnan(deda):
@@ -255,6 +256,7 @@ class Coeff:
 
 if __name__ == "__main__":
     Fokker = Coeff(Mach=0.77)
+    percentage = 0.25
     sweep_angle = Fokker.sweep(percentage)
     plt.plot([0, Fokker.b/2, Fokker.b/2,0,0],[0, -Fokker.b/2 * np.tan(np.radians(Fokker.LabdaLead)), -Fokker.b/2 * np.tan(np.radians(Fokker.LabdaLead))-Fokker.ct,-Fokker.cr,0],label='Wing outline')
     plt.plot([0,Fokker.b/2], [-percentage * Fokker.cr, -percentage * Fokker.cr - np.tan(sweep_angle) * Fokker.b / 2], "-.", label=f'{percentage * 100}% sweep')
@@ -267,3 +269,6 @@ if __name__ == "__main__":
     CLalphaAh = Fokker.C_L_alpha_Ah(CLalphaW)
     CLalphah = Fokker.C_L_alpha_h()
     x_ac = Fokker.x_ac(ac_wing_contribution_c, CLalphaAh)
+    deda = Fokker.de_dalpha(Fokker.sweep(0.25), CLalphaW)
+    print(deda)
+    print(4/(Fokker.A+2))
