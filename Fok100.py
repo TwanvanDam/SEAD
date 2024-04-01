@@ -1,5 +1,5 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 class Coeff:
     def __init__(self):
@@ -103,3 +103,20 @@ class Coeff:
     def LEMACV(self):
         nose_to_LECRV = 27.8
         return nose_to_LECRV + np.tan(np.radians(self.LabdaLeadV)) * self.MACyV
+
+    def sweep(self, percentage):
+        start_tip = np.tan(np.radians(self.LabdaLead)) * self.b/2
+        root = self.cr * percentage
+        tip = self.ct * percentage + start_tip
+        return np.arctan((tip-root)/(self.b/2))
+
+if __name__ == "__main__":
+    Fokker = Coeff()
+    percentage = 0.0
+    sweep_angle = Fokker.sweep(percentage)
+    print(np.degrees(sweep_angle))
+    plt.plot([0, Fokker.b/2, Fokker.b/2,0,0],[0, -Fokker.b/2 * np.tan(np.radians(Fokker.LabdaLead)), -Fokker.b/2 * np.tan(np.radians(Fokker.LabdaLead))-Fokker.ct,-Fokker.cr,0],label='Wing outline')
+    plt.plot([0,Fokker.b/2], [-percentage * Fokker.cr, -percentage * Fokker.cr - np.tan(sweep_angle) * Fokker.b / 2], "-.", label=f'{percentage * 100}% sweep')
+    plt.vlines(Fokker.MACy,-Fokker.LEMAC+13.7,-Fokker.LEMAC+13.7-Fokker.MAC,'k',label='MAC')
+    plt.legend()
+    plt.show()
