@@ -2,31 +2,36 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Coeff:
-    def __init__(self):
+    def __init__(self, Mach=np.nan):
         self.url = 'https://customer-janes-com.tudelft.idm.oclc.org/entityprofile/equipment/Equipment_12900/specifications?explorerState=7a3d6ad9-907d-4673-ab0d-8573805a660e&rootEntity=Equipment_12900'
         ###Fuselage
+
+        self.M = Mach # Mach number
+        self.beta = np.sqrt(1 - self.M ** 2) # Compressibility factor
         self.f_l = 32.5  # fuselage length [m]
-        self.b_f = np.nan  # fuselage width [m]
-        self.h_f = np.nan # fuselage height [m]
+        self.f_diameter = 3.3  # fuselage diameter [m]
+        self.b_f = self.f_diameter  # fuselage width [m]
+        self.h_f = self.f_diameter # fuselage height [m]
         self.wb = 14.01  # Wheelbase [m]
         self.wt = 5.04  # wheeltrack [m]
         self.dw = 3.75  # Nose wheel distance
         self.dwing = 14.25  # Distance nose Cr wing
         self.de = 21.9  # Distance front engine
         self.ln = 4.71  # length nacelle
-        self.b_n = np.nan # nacelle width
+        self.b_n = 1.58 # nacelle width
 
         ###Wing
         self.b = 28.08  # wingspan [m]
         self.A = 8.4  # Aspect ratio
         self.S = 93.50 # wing area [m^2]
-        self.Snet = np.nan # net area of the wing
+        self.Snet = 74.5 # net area of the wing
         self.c = self.b / self.A
+        self.c_geometric = self.S / self.b  # Geometric chord
         self.cr = 5.28  # chord root length
         self.ct = 1.26  # chord tip length
         self.taper = self.ct / self.cr # taper ratio
         self.LabdaLead = 20.2 # Leading edge sweep angle
-        self.l_fn = np.nan # nose to start wing length
+        #self.l_fn = np.nan # nose to start wing length
 
         ##Tail
         self.b_ht = 10.04  # Tail span
@@ -138,7 +143,7 @@ class Coeff:
         tip = self.ct_vt * percentage + start_tip
         return np.arctan((tip-root)/(self.b_vt/2))
 
-    def x_ac(self,wing_contribution_c, C_L_alpha_Ah):
+    def x_ac(self,wing_contribution_c, C_L_alpha_Ah, k_n=-2.5):
         """Aerodynamic center of the aircraft less tail obtained from AE3211 lecture 6
         :param wing_contribution_c: Wing contribution to the aerodynamic center
         :param C_L_alpha_Ah: Lift rate coefficient of the aircraft less tail
@@ -156,24 +161,25 @@ class Coeff:
         b_f = self.b_f
         b_n = self.b_n
         h_f = self.h_f
-        l_fn = self.l_fn
+        l_fn = self.de
         l_n = self.ln
         S = self.S
-        c = self.MAC
+        c = self.MAC # Mean aerodynamic chord
+        c_g = S / b  # Mean geometric chord
         taper = self.taper
         sweep25 = self.sweep(0.25)
 
-        c_g = S / b  # Mean geometric chord
-        fuselage_contribution1_c = -(1.8 / C_L_alpha_Ah) * (b_f * h_f * l_fn) / (S * c)
-        fuselage_contribution2_c = (0.25 / (1 + taper)) * (b_f * c_g * (b - b_f)) / (c * c * (b + 2.15 * b_f)) * np.tan(
+
+        fuselage_contribution1_c = - (1.8 / C_L_alpha_Ah) * ((b_f * h_f * l_fn) / (S * c))
+        fuselage_contribution2_c = (0.273 / (1 + taper)) * ((b_f * c_g * (b - b_f)) / (c * c * (b + 2.15 * b_f))) * np.tan(
             sweep25)
-        nacelles_contribution_c = 2 * -2.5 * b_n * b_n * l_n / (S * c * C_L_alpha_Ah)
+        nacelles_contribution_c = 2 * ((k_n * b_n * b_n * l_n) / (S * c * C_L_alpha_Ah))
         return (wing_contribution_c + fuselage_contribution1_c + fuselage_contribution2_c + nacelles_contribution_c) * c
 
     def c_m_ac(self):
         raise NotImplementedError("This method is not implemented yet")
 
-    def C_L_alpha_h(self,M, eta=0.95):
+    def C_L_alpha_h(self, eta=0.95):
         """Lift rate coefficient of the horizontal tail obtained from AE3211 lecture 6
         :param M: Mach number
         :param A_h: Aspect ratio of the horizontal tail
@@ -181,8 +187,8 @@ class Coeff:
         A_h = self.A_h
         sweep50h = self.sweepH(0.5)
 
-        beta = np.sqrt(1 - M * M)
-        result = 2 * np.pi * A_h / (2 + np.sqrt(4 + (A_h * beta / eta) ** 2) * (1 + (np.tan(sweep50h) / beta) ** 2))
+        beta = self.beta
+        result = (2 * np.pi * A_h) / (2 + np.sqrt(4 + ((A_h * beta / eta) ** 2) * (1 + (np.tan(sweep50h) / beta) ** 2)))
         if np.isnan(result):
             raise ValueError("Not all values are defined")
         return result
@@ -199,7 +205,7 @@ class Coeff:
         S = self.S
         S_net = self.Snet
 
-        result = C_L_alpha_w * (1 + 2.15 * (b_f / b)) * (S_net / S) + (np.pi * b_f ** 2) / (S * 2)
+        result = C_L_alpha_w * ((1 + 2.15 * (b_f / b)) * (S_net / S)) + ((np.pi * b_f ** 2) / (S * 2))
         if np.isnan(result):
             raise ValueError("Not all values are defined")
         return result
@@ -232,26 +238,31 @@ class Coeff:
         """Tail wing speed ratio obtained from AE3211 lecture 6"""
         return 1
 
-    def C_L_alpha_w(self, M, eta=0.95):
+    def C_L_alpha_w(self, eta=0.95):
         """Lift rate coefficient of the wing obtained from AE2111 - II course aircraft lecture 2
         :param M: Mach number
         :param A: Aspect ratio of the wing
         :param sweep25: 25% sweep angle of the wing in radians"""
         A = self.A
         sweep25 = self.sweep(0.25)
-        beta = np.sqrt(1 - M * M)
-        result = 2 * np.pi * A / (2 + np.sqrt(4 + ((A * beta / eta) ** 2) * (1 + (np.tan(sweep25) / beta) ** 2)))
+        beta = self.beta
+
+        result = (2 * np.pi * A) / (2 + np.sqrt(4 + ((A * beta / eta) ** 2) * (1 + (np.tan(sweep25) / beta) ** 2)))
         if np.isnan(result):
             raise ValueError("Not all values are defined")
         return result
 
 if __name__ == "__main__":
-    Fokker = Coeff()
-    percentage = 0.0
+    Fokker = Coeff(Mach=0.77)
     sweep_angle = Fokker.sweep(percentage)
-    print(np.degrees(sweep_angle))
     plt.plot([0, Fokker.b/2, Fokker.b/2,0,0],[0, -Fokker.b/2 * np.tan(np.radians(Fokker.LabdaLead)), -Fokker.b/2 * np.tan(np.radians(Fokker.LabdaLead))-Fokker.ct,-Fokker.cr,0],label='Wing outline')
     plt.plot([0,Fokker.b/2], [-percentage * Fokker.cr, -percentage * Fokker.cr - np.tan(sweep_angle) * Fokker.b / 2], "-.", label=f'{percentage * 100}% sweep')
     plt.vlines(Fokker.MACy,-Fokker.LEMAC+13.7,-Fokker.LEMAC+13.7-Fokker.MAC,'k',label='MAC')
     plt.legend()
     plt.show()
+
+    ac_wing_contribution_c = 0.29    #16.82 # Wing contribution to the aerodynamic center measure from nose 29% mac
+    CLalphaW = Fokker.C_L_alpha_w()
+    CLalphaAh = Fokker.C_L_alpha_Ah(CLalphaW)
+    CLalphah = Fokker.C_L_alpha_h()
+    x_ac = Fokker.x_ac(ac_wing_contribution_c, CLalphaAh)
