@@ -46,7 +46,7 @@ class Coeff:
         self.Sht = 17.76  # Horizontal Tailplane area
         self.A_h = (self.b_ht ** 2) / self.Sht  # Aspect ratio of the horizontal tail
         self.A_v = (self.b_vt ** 2) / self.Svt # Aspect ratio of the vertical tail
-        self.l_h = np.nan  # length from tail to wing
+        self.l_h = self.LEMACH + 0.3 * self.MACH - (16.8) # length from tail to wing
 
         ###Control
         self.Sa = 3.53  # Aileron area [m^2]
@@ -75,6 +75,9 @@ class Coeff:
         self.holda = 7.2
         self.cargof = self.maxc * self.holdf / (self.holdf + self.holda)
         self.cargoa = self.maxc * self.holda / (self.holdf + self.holda)
+
+        ##control stable
+        self.Mcruise = 0.77
 
     @property
     def MAC(self):
