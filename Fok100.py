@@ -25,20 +25,20 @@ class Coeff:
         self.cr = 5.28  # chord root length
         self.ct = 1.26  # chord tip length
         self.taper = self.ct / self.cr # taper ratio
-        self.LabdaLead = 20.2
+        self.LabdaLead = 20.2 # Leading edge sweep angle
         self.l_fn = np.nan # nose to start wing length
 
         ##Tail
         self.b_ht = 10.04  # Tail span
-        self.cr_ht = 3.14
-        self.ct_ht = 1.26
-        self.LabdaLeadH = 31.3
-        self.b_vt = 3.75
-        self.cr_vt = 4.25
-        self.ct_vt = 3.32
-        self.LabdaLeadV = 42.1
-        self.Svt = 10  # fin area
-        self.Sht = 17.76  # Tailplane area
+        self.cr_ht = 3.14 # Horizontal Tail chord root
+        self.ct_ht = 1.26 # Horizontal Tail chord tip
+        self.LabdaLeadH = 31.3 # Horizontal tail Leading edge sweep angle
+        self.b_vt = 3.75 # Vertical Tail span
+        self.cr_vt = 4.25   # Vertical Tail chord root
+        self.ct_vt = 3.32   # Vertical Tail chord tip
+        self.LabdaLeadV = 42.1 # Vertical tail Leading edge sweep angle
+        self.Svt = 10  # vertical fin area
+        self.Sht = 17.76  # Horizontal Tailplane area
         self.l_h = np.nan  # length from tail to wing
 
         ###Control
