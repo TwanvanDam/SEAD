@@ -76,8 +76,6 @@ class Coeff:
         self.cargof = self.maxc * self.holdf / (self.holdf + self.holda)
         self.cargoa = self.maxc * self.holda / (self.holdf + self.holda)
 
-        ##control stable
-        self.Mcruise = 0.77
 
     @property
     def MAC(self):
