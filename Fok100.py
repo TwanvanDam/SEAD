@@ -39,6 +39,8 @@ class Coeff:
         self.LabdaLeadV = 42.1 # Vertical tail Leading edge sweep angle
         self.Svt = 10  # vertical fin area
         self.Sht = 17.76  # Horizontal Tailplane area
+        self.A_h = (self.b_ht ** 2) / self.Sht  # Aspect ratio of the horizontal tail
+        self.A_v = (self.b_vt ** 2) / self.Svt # Aspect ratio of the vertical tail
         self.l_h = np.nan  # length from tail to wing
 
         ###Control
@@ -171,16 +173,16 @@ class Coeff:
     def c_m_ac(self):
         raise NotImplementedError("This method is not implemented yet")
 
-    def C_L_alpha_h(self,M):
+    def C_L_alpha_h(self,M, eta=0.95):
         """Lift rate coefficient of the horizontal tail obtained from AE3211 lecture 6
         :param M: Mach number
         :param A_h: Aspect ratio of the horizontal tail
         :param sweep50h: 50% sweep angle of the horizontal tail in radians"""
-        A_h = self.Sht
+        A_h = self.A_h
         sweep50h = self.sweepH(0.5)
 
         beta = np.sqrt(1 - M * M)
-        result = 2 * np.pi * A_h / (2 + np.sqrt(4 + (A_h * beta / 0.95) ** 2) * (1 + (np.tan(sweep50h) / beta) ** 2))
+        result = 2 * np.pi * A_h / (2 + np.sqrt(4 + (A_h * beta / eta) ** 2) * (1 + (np.tan(sweep50h) / beta) ** 2))
         if np.isnan(result):
             raise ValueError("Not all values are defined")
         return result
