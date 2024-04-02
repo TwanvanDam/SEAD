@@ -54,6 +54,10 @@ class Coeff:
         self.Ss = 3.62  # Spoiler area
         self.Sr = 2.30  # Rudder area
         self.Se = 3.96  # Elevator area
+        self.bf = 11.0
+        self.cf = self.Sf / self.bf
+        self.Swf = 41.1
+        self.cprimec = self.cf * np.cos(np.radians(42))*0.75/3.33 + 1
 
         ###Weights (tay620 engine) [kg]
         self.OEW = 24593
@@ -175,10 +179,9 @@ class Coeff:
         fuselage_contribution2_c = (0.273 / (1 + taper)) * ((b_f * c_g * (b - b_f)) / (c * c * (b + 2.15 * b_f))) * np.tan(
             sweep25)
         nacelles_contribution_c = 2 * ((k_n * b_n * b_n * l_n) / (S * c * C_L_alpha_Ah))
-        return (wing_contribution_c + fuselage_contribution1_c + fuselage_contribution2_c + nacelles_contribution_c) * c
+        return (wing_contribution_c + fuselage_contribution1_c + fuselage_contribution2_c + nacelles_contribution_c)
 
-    def c_m_ac(self):
-        raise NotImplementedError("This method is not implemented yet")
+
 
     def C_L_alpha_h(self, eta=0.95):
         """Lift rate coefficient of the horizontal tail obtained from AE3211 lecture 6
@@ -253,6 +256,51 @@ class Coeff:
         if np.isnan(result):
             raise ValueError("Not all values are defined")
         return result
+
+    def C_m_ac(self, cm0 =-0.067, CL0=0.647):
+        return self.C_m_ac_w(cm0) + self.C_m_ac_fus(CL0) + self.C_m_ac_fl(CL0)
+
+    def C_m_ac_w(self, cm0=-0.067):
+        A = self.A
+        sweep25 = self.sweep(0.25)
+        result = cm0 * A * np.cos(sweep25)**2 / (A + 2* np.cos(sweep25))
+        if np.isnan(result):
+            raise ValueError("Not all values are defined")
+        return result
+
+    def C_L_AminH(self):
+        CLA = 9.81 * self.MTOW / (0.5* 1.225 * self.S * (self.M * np.sqrt(1.4 * 287 * 288.15))**2)
+        CLH = - 0.8 * self.Sht / self.S * self.Vh_V_square()
+        result = (CLH - self.C_m_ac())/(0.044 - self.x_ac(0.27, self.C_L_alpha_Ah(self.C_L_alpha_w())))
+        result = CLA - CLH
+        return result
+
+    def C_m_ac_fus(self, CL0=0.647):
+        bf = self.f_diameter
+        lf = self.f_l
+        S = self.S
+        clalphaah = self.C_L_alpha_Ah(self.C_L_alpha_w())
+        result = -1.8 * (1-2.5*bf/lf) * (np.pi * bf **2 *lf * CL0) / (4 * S * self.MAC * clalphaah)
+        if np.isnan(result):
+            raise ValueError("Not all values are defined")
+        return result
+
+
+    def C_m_ac_fl(self, CL0):
+        mu1 = 0.16
+        mu2 = 0.8
+        mu3 = 0.055
+        deltaclmax = self.cprimec*1.6
+        cprimec = self.cprimec
+        swfs = self.Swf / self.S
+        A = self.A
+        lambdaq = self.sweep(0.25)
+        CL = CL0 + deltaclmax
+        deltacm4 = mu2 * (-mu1 * deltaclmax * cprimec - (CL + deltaclmax*(1-swfs)) /8 *cprimec * (cprimec-1)) + 0.7 * A / (1+2/A) * mu3 * deltaclmax * np.tan(lambdaq)
+        cmac = deltacm4 - CL * (0.25 - self.x_ac(0.27, self.C_L_alpha_Ah(self.C_L_alpha_w())))
+        if np.isnan(cmac):
+            raise ValueError("Not all values are defined")
+        return cmac
 
 if __name__ == "__main__":
     Fokker = Coeff(Mach=0.77)
