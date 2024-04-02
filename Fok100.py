@@ -69,8 +69,8 @@ class Coeff:
         self.WT = self.MTOW / self.T  # Thrust loading = kg/N
 
         ##Cargo
-        self.maxc = 900  # kg virgin australia
-        self.massp = self.MP - self.maxc
+        self.massp = 85 * 109
+        self.maxc = self.MP - self.massp
         self.holdf = 9.5  # volumes hold m3
         self.holda = 7.2
         self.cargof = self.maxc * self.holdf / (self.holdf + self.holda)

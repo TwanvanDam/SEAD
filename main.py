@@ -1,13 +1,13 @@
 from Fok100 import Coeff
 from plots import piechart
-from cgfunc import cg_calc
+from cgfunc import cg_calc, cg_calc_oew
 from Potato import calc_potato
 import numpy as np
 
 
 def model(Fokker, plot):
     ### Pie chart
-    data = {'OEW': Fokker.OEW,'Fuel': Fokker.MTOW- Fokker.MP,'Payload': Fokker.MP} #how is fuel weight OEW - Wpayload
+    data = {'OEW': Fokker.OEW,'Fuel': Fokker.MTOW- Fokker.MP - Fokker.OEW,'Payload': Fokker.MP} #how is fuel weight OEW - Wpayload
     piechart(data, plot)
 
     ### CG calculation
@@ -22,19 +22,16 @@ def model(Fokker, plot):
     cg_wing = cg_calc(wing_group)
     cg_fuselage = cg_calc(fuselage_group)
 
-    cg_OEW = cg_calc({**wing_group, **fuselage_group})
+    cg_OEW = cg_calc_oew({**wing_group, **fuselage_group}, Fokker)
 
 
     #TODO below values guessed
-    cargo_hold_locations = (5,20)
+    cargo_hold_locations = (0.3 * Fokker.f_l,0.7 * Fokker.f_l)
     first_row = 6.7
     tank_location = Fokker.LEMAC + 0.5 * Fokker.MAC
-    calc_potato(cg_OEW, Fokker.OEW, Fokker.maxc, cargo_hold_locations, (Fokker.holdf, Fokker.holda),Fokker.massp/109,first_row, tank_location, Fokker.MTOW- Fokker.MP, Fokker.LEMAC, Fokker.MAC, plot=plot)
-
+    calc_potato(cg_OEW, Fokker.OEW, Fokker.maxc, cargo_hold_locations, (Fokker.holdf, Fokker.holda),Fokker.massp/109,first_row, tank_location, Fokker.MRW - Fokker.MZFW, Fokker.LEMAC, Fokker.MAC, plot=plot)
 
 if __name__ == '__main__':
-    plot = False
-    Fokker = Coeff()
-    print(Fokker.sweepH(0.25), Fokker.ct_ht/Fokker.cr_ht)
-    print(Fokker.LEMACH + 0.3 * Fokker.MACH - (16.8))
-    # model(Fokker, plot)
+    plot = True
+    Fokker = Coeff(0.193)
+    model(Fokker, plot)
