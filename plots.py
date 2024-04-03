@@ -185,7 +185,7 @@ def calc_potato_fuel(cg_0:float, OEW:float, Wfuel, tank_location, X_lemac:float=
     return cg_fuel[-1], OEW_fuel[-1], min_cg, max_cg
 
 def calc_potato(cg_0:float, OEW:float, Wcargo:tuple, cargo_hold_locations:tuple, Wpass:float,
-                first_row:float,tank_location:tuple,Wfuel:tuple, name:str ,X_lemac:float=0, mac:float=1,plot:bool=True,two_plots:int=0, show_cg_limits:bool=True,
+                first_row:float,tank_location:tuple,Wfuel:tuple, name:str ,X_lemac:float=15.753647838482614, mac:float=3.6818348623853216,plot:bool=True,two_plots:int=0, show_cg_limits:bool=True,
                 n_rows=22, pitch=32, boarding_order=("windows", "aisles", "middle"), battery=False) -> tuple:
     """This function calculates the loading diagram of the aircraft with the given inputs and returns the minimum and maximum cg locations.
     :param cg_0: initial cg location at OEW measured from front of aircraft
