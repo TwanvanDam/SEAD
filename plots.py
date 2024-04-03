@@ -9,7 +9,7 @@ def piechart(data, plot, name):
     plt.figure()
     plt.pie(weights, labels=categories, autopct=lambda p: '{:,.0f} [kg]  \n {:.1f}%'.format((p / 100) * sum(weights), p), startangle=90)
     plt.axis('equal')
-    plt.title('Distribution of weights')
+    plt.title(f'Distribution of weights of {name}')
     plt.savefig(f"./Plots/piechart_{name}.pdf")
     if plot:
         plt.show()
@@ -176,7 +176,7 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:float, cargo_hold_locations:tuple,
     return min_cg, max_cg
 
 
-def control_stability(x_range, control, stability, stability_static_margin, plot,y, cg):
+def control_stability(x_range, control, stability, stability_static_margin, plot,y, cg, name):
     plt.plot(x_range, control, color='red', label='Control')
     plt.fill_between(x_range, control, facecolor='red', alpha=0.5, label='Not controllable')
     plt.plot(x_range, stability, color='blue',label='Stability')
@@ -187,9 +187,10 @@ def control_stability(x_range, control, stability, stability_static_margin, plot
     plt.xlim([np.min(x_range), np.max(x_range)])
     plt.xlabel(r'$x$ [mac]')
     plt.ylabel(r'$S_h/S$ [-]')
+    plt.title(f'Scissor plot of {name}')
     plt.grid()
     plt.legend()
-    plt.savefig("./Plots/scissor.pdf")
+    plt.savefig(f"./Plots/scissor_{name}.pdf")
     if plot:
         plt.show()
 

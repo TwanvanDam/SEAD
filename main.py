@@ -24,7 +24,9 @@ def model(coeff100, coeff120, plot):
                          Fokker100.MAC, plot=False, name='Fokker 120')
 
     stability_static_margin = 0.05
-    control_stability(np.arange(0, 1, 0.01), control(coeff100(0.193)), stability(coeff100(0.77)), stability_static_margin, plot, Fokker100.Sht/Fokker100.S, potato)
+    control_stability(np.arange(0, 1, 0.01), control(coeff100(0.193)), stability(coeff100(0.77)), stability_static_margin, plot, Fokker100.Sht/Fokker100.S, potato, Fokker100.name)
+    control_stability(np.arange(0, 1, 0.01), control(coeff120(0.193)), stability(coeff120(0.77)),
+                      stability_static_margin, plot, Fokker120.Sht / Fokker120.S, potato, Fokker120.name)
 
 if __name__ == '__main__':
     plot = True
