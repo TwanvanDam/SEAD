@@ -30,7 +30,11 @@ def model(coeff, plot):
     cargo_hold_locations = (0.3 * Fokker.f_l,0.7 * Fokker.f_l)
     first_row = 6.7
     tank_location = Fokker.LEMAC + 0.5 * Fokker.MAC
-    potato = calc_potato(cg_OEW, Fokker.OEW, Fokker.maxc, cargo_hold_locations, (Fokker.holdf, Fokker.holda),Fokker.massp/109,first_row, tank_location, Fokker.MRW - Fokker.MZFW, Fokker.LEMAC, Fokker.MAC, plot=plot)
+    potato = calc_potato(cg_OEW, Fokker.OEW, Fokker.maxc, cargo_hold_locations, (Fokker.holdf, Fokker.holda),Fokker.massp/109,first_row, tank_location, Fokker.MRW - Fokker.MZFW, Fokker.LEMAC, Fokker.MAC, plot=False,name='Fokker 100')
+    potato = calc_potato(cg_OEW+0.1, Fokker.OEW, Fokker.maxc, cargo_hold_locations, (Fokker.holdf, Fokker.holda),
+                         Fokker.massp / 109, first_row, tank_location, Fokker.MRW - Fokker.MZFW, Fokker.LEMAC,
+                         Fokker.MAC, plot=False, name='Fokker 120')
+
     stability_static_margin = 0.05
     control_stability(np.arange(0, 1, 0.01), control(coeff(0.193)), stability(coeff(0.77)), stability_static_margin, plot, Fokker.Sht/Fokker.S, potato)
 

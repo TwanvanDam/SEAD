@@ -14,7 +14,7 @@ def piechart(data, plot):
     if plot:
         plt.show()
 
-def calc_potato_pass(cg_0:float, OEW_0:float, Wpass:float, first_row:float, X_lemac:float=0, mac:float=1, plot:bool=True, boarding_order:tuple=("windows", "aisles", "middle"), n_rows:int=22, pitch:int=32) -> tuple:
+def calc_potato_pass(cg_0:float, OEW_0:float, Wpass:float, first_row:float, X_lemac:float=0, mac:float=1,plot:bool=True, boarding_order:tuple=("windows", "aisles", "middle"), n_rows:int=22, pitch:int=32, color=None) -> tuple:
     """This function calculates the loading diagram of the passengers with the given inputs and returns the minimum and maximum cg locations.
     :param cg_0: initial cg location at OEW measured from front of aircraft
     :param OEW_0: Operating Empty Weight
@@ -54,11 +54,13 @@ def calc_potato_pass(cg_0:float, OEW_0:float, Wpass:float, first_row:float, X_le
                 OEW_pax.append(n_pax_row*Wpass + OEW_pax[-1])
             min_cg = np.min([min_cg, *cg_pax])
             max_cg = np.max([max_cg, *cg_pax])
-            if plot:
+            if color == None:
                 plt.plot(cgfunc.convert_global_xlemac(cg_pax,X_lemac,mac), OEW_pax,".-", label=dir+ " " + column)
+            else:
+                plt.plot(cgfunc.convert_global_xlemac(cg_pax,X_lemac,mac), OEW_pax, color=color)
     return cg_pax[-1], OEW_pax[-1], min_cg, max_cg
 
-def calc_potato_cargo(cg_0:float, OEW_0:float, Wcargo:float, cargo_hold_locations:tuple, cargo_volumes:tuple, X_lemac:float=0, mac:float=1, plot:bool=True) -> tuple:
+def calc_potato_cargo(cg_0:float, OEW_0:float, Wcargo:float, cargo_hold_locations:tuple, cargo_volumes:tuple, X_lemac:float=0, mac:float=1, plot:bool=True, color=None) -> tuple:
     """This function calculates the loading diagram of the cargo with the given inputs and returns the minimum and maximum cg locations.
     :param cg_0: initial cg location at OEW measured from front of aircraft
     :param OEW_0: Operating Empty Weight
@@ -93,15 +95,17 @@ def calc_potato_cargo(cg_0:float, OEW_0:float, Wcargo:float, cargo_hold_location
             OEW_cargo.append(OEW_cargo[-1]+cargo_weight)
             min_cg = np.min([min_cg, *cg_cargo])
             max_cg = np.max([max_cg, *cg_cargo])
-            if plot:
+            if color == None:
                 if i:
                     line, = plt.plot(cgfunc.convert_global_xlemac(cg_cargo,X_lemac,mac),OEW_cargo, label=f"cargo {dir}")
                     i = 0
                 else:
                     plt.plot(cgfunc.convert_global_xlemac(cg_cargo,X_lemac,mac), OEW_cargo, line.get_color())
+            else:
+                plt.plot(cgfunc.convert_global_xlemac(cg_cargo,X_lemac,mac), OEW_cargo, color=color)
     return cg_cargo[-1], OEW_cargo[-1], min_cg, max_cg
 
-def calc_potato_fuel(cg_0:float, OEW:float, Wfuel, tank_location, X_lemac:float=0, mac:float=1, plot:bool=True) -> tuple:
+def calc_potato_fuel(cg_0:float, OEW:float, Wfuel, tank_location, X_lemac:float=0, mac:float=1, plot:bool=True, color=None) -> tuple:
     """This function calculates the loading diagram of the fuel with the given inputs and returns the minimum and maximum cg locations.
     :param cg_0: initial cg location at OEW measured from front of aircraft
     :param OEW: Operating Empty Weight
@@ -125,11 +129,17 @@ def calc_potato_fuel(cg_0:float, OEW:float, Wfuel, tank_location, X_lemac:float=
         OEW_fuel.append(OEW_fuel[-1] + tank_weight)
         min_cg = np.min([min_cg, *cg_fuel])
         max_cg = np.max([max_cg, *cg_fuel])
-        if plot:
+        if color == None:
             plt.plot(cgfunc.convert_global_xlemac(cg_fuel,X_lemac,mac), OEW_fuel, label="fuel")
+        else:
+            if color == "b":
+                name = "Fokker 100"
+            if color == "r":
+                name = "Fokker 120"
+            plt.plot(cgfunc.convert_global_xlemac(cg_fuel,X_lemac,mac), OEW_fuel, color=color, label=name)
     return cg_fuel[-1], OEW_fuel[-1], min_cg, max_cg
 
-def calc_potato(cg_0:float, OEW:float, Wcargo:float, cargo_hold_locations:tuple, cargo_volumes:tuple, Wpass:float, first_row:float,tank_location:tuple,Wfuel:tuple ,X_lemac:float=0, mac:float=1,plot:bool=True):
+def calc_potato(cg_0:float, OEW:float, Wcargo:float, cargo_hold_locations:tuple, cargo_volumes:tuple, Wpass:float, first_row:float,tank_location:tuple,Wfuel:tuple ,X_lemac:float=0, mac:float=1,plot:bool=True,name=None):
     """This function calculates the loading diagram of the aircraft with the given inputs and returns the minimum and maximum cg locations.
     :param cg_0: initial cg location at OEW measured from front of aircraft
     :param OEW: Operating Empty Weight
@@ -143,13 +153,18 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:float, cargo_hold_locations:tuple,
     :param plot: Boolean to determine if a plot should be displayed
     :return: Tuple with the minimum and maximum cg locations in the local coordinate system
     """
-
-    cg_cargo, OEW_cargo, min_cg_cargo, max_cg_cargo = calc_potato_cargo(cg_0,OEW, Wcargo, cargo_hold_locations, cargo_volumes,X_lemac,mac, plot)
-    cg_pass, OEW_pass, min_cg_pass, max_cg_pass = calc_potato_pass(cg_cargo, OEW_cargo, Wpass, first_row,X_lemac, mac, plot)
-    cg_fuel, OEW_fuel, min_cg_fuel, max_cg_fuel = calc_potato_fuel(cg_pass, OEW_pass, Wfuel, tank_location,X_lemac, mac, plot)
+    if name == None:
+        color = None
+    if name == "Fokker 100":
+        color = "b"
+    if name == "Fokker 120":
+        color = "r"
+    cg_cargo, OEW_cargo, min_cg_cargo, max_cg_cargo = calc_potato_cargo(cg_0,OEW, Wcargo, cargo_hold_locations, cargo_volumes,X_lemac,mac, plot, color=color)
+    cg_pass, OEW_pass, min_cg_pass, max_cg_pass = calc_potato_pass(cg_cargo, OEW_cargo, Wpass, first_row,X_lemac, mac, plot, color=color)
+    cg_fuel, OEW_fuel, min_cg_fuel, max_cg_fuel = calc_potato_fuel(cg_pass, OEW_pass, Wfuel, tank_location,X_lemac, mac, plot, color=color)
     min_cg = (min(min_cg_cargo,min_cg_pass, min_cg_fuel)-X_lemac)/mac
     max_cg = (max(max_cg_pass,max_cg_cargo, max_cg_fuel)-X_lemac)/mac
-    if plot:
+    if name == None or name == "Fokker 120":
         plt.grid()
         plt.axvline(min_cg - 0.02, color='k')
         plt.axvline(max_cg + 0.02, color='k')
