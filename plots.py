@@ -1,16 +1,16 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from Fok100 import Coeff
+# from Fok100 import Coeff
 import cgfunc
 
-def piechart(data, plot):
+def piechart(data, plot, name):
     categories, weights = list(data.keys()) ,list(data.values())
 
     plt.figure()
     plt.pie(weights, labels=categories, autopct=lambda p: '{:,.0f} [kg]  \n {:.1f}%'.format((p / 100) * sum(weights), p), startangle=90)
     plt.axis('equal')
     plt.title('Distribution of weights')
-    plt.savefig("./Plots/piechart.pdf")
+    plt.savefig(f"./Plots/piechart_{name}.pdf")
     if plot:
         plt.show()
 
@@ -193,7 +193,7 @@ def control_stability(x_range, control, stability, stability_static_margin, plot
     if plot:
         plt.show()
 
-def stability(c: Coeff,wing_contribution=0.29):
+def stability(c,wing_contribution=0.29):
     x = np.arange(0, 1, 0.01)
     CLalphaw = c.C_L_alpha_w()
     CLalphah = c.C_L_alpha_h()
@@ -205,7 +205,7 @@ def stability(c: Coeff,wing_contribution=0.29):
     y  =  x/a - (x_ac - 0.05)/a
     return y
 
-def control(c: Coeff, wing_contribution=0.27):
+def control(c, wing_contribution=0.27):
     x = np.arange(0, 1, 0.01)
     a = 1 / ((-0.8 * c.l_h * c.Vh_V_square())/(c.C_L_AminH() * c.MAC))
     y = a * x + (c.C_m_ac()/c.C_L_AminH() - c.x_ac(wing_contribution, c.C_L_alpha_Ah(c.C_L_alpha_w()))) * a
@@ -216,5 +216,5 @@ if __name__ == "__main__":
     # stability = -1.2 + 3*x
     # control = 1.5 - 2*x
     stability_static_margin = 0.05
-    control_stability(x, control(Coeff(0.193)), stability(Coeff(0.77)), stability_static_margin)
+    # control_stability(x, control(Coeff(0.193)), stability(Coeff(0.77)), stability_static_margin)
 

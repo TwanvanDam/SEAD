@@ -1,9 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from plots import piechart
+from cgfunc import cg_calc
 
 class Coeff:
     def __init__(self, Mach=np.nan):
         self.url = 'https://customer-janes-com.tudelft.idm.oclc.org/entityprofile/equipment/Equipment_12900/specifications?explorerState=7a3d6ad9-907d-4673-ab0d-8573805a660e&rootEntity=Equipment_12900'
+        self.name = 'Fokker100'
         ###Fuselage
 
         self.M = Mach # Mach number
@@ -92,7 +95,15 @@ class Coeff:
                                'fuselage': [0.1929 * m, 0.47 * self.f_l], 'ngear': [0.0047 * m, self.dw],
                                'nacelle': [0.0183 * m, self.de + cg_engine_factor * self.ln],
                                'Prop': [0.0912 * m, self.de + cg_engine_factor * self.ln]}
+        self.cg_oew = cg_calc({**self.wing_group, **self.fuselage_group})
 
+        ## Fokker100
+        self.tank_location = self.LEMAC + 0.5 * self.MAC
+
+
+    def pie_chart(self, plot):
+        data = {'OEW': self.OEW,'Fuel': self.MTOW- self.MP - self.OEW,'Payload': self.MP}  # how is fuel weight OEW - Wpayload
+        piechart(data, plot, self.name)
     @property
     def MAC(self):
         t = self.ct / self.cr  # taper ratio

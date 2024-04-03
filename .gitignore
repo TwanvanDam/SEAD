@@ -170,3 +170,5 @@ cython_debug/
 /Plots/piechart.pdf
 /Plots/potato.pdf
 /Plots/scissor.pdf
+/Plots/piechart_Fokker100.pdf
+/Plots/piechart_Fokker120.pdf

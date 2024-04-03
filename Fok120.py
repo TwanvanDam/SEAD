@@ -1,9 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from plots import piechart
 
 class Coeff:
     def __init__(self, Mach=np.nan):
         self.url = 'https://customer-janes-com.tudelft.idm.oclc.org/entityprofile/equipment/Equipment_12900/specifications?explorerState=7a3d6ad9-907d-4673-ab0d-8573805a660e&rootEntity=Equipment_12900'
+        self.name = 'Fokker120'
         ###Fuselage
 
         self.M = Mach # Mach number
@@ -62,11 +64,12 @@ class Coeff:
         self.cprimec = self.cf * np.cos(np.radians(42))*0.75/3.33 + 1
 
         ###Weights (tay620 engine) [kg]
-        self.OEW = 24593
+
         self.MZFW = 35830  # Max zero fuel weight
         self.MRW = 43320  # Max ramp weight
         self.MTOW = 43090  # Max take of weight
         self.MLW = 38780  # Max landing weight
+        self.OEW = 24593 + (12+14-14.77-9.12)*self.MTOW/100
         self.MP = 11108  # Max payload
 
         ###Loading
@@ -75,7 +78,7 @@ class Coeff:
         self.WT = self.MTOW / self.T  # Thrust loading = kg/N
 
         ##Cargo
-        self.massp = 85 * 109
+        self.massp = 85 * 90
         self.maxc = self.MP - self.massp
         self.holdf = 9.5  # volumes hold m3
         self.holda = 7.2
@@ -98,7 +101,13 @@ class Coeff:
         self.battery = 400
         self.batteryx = self.door
         self.hydrogen = 500
-        self.hydrogenx = self.de + cg_engine_factor * self.ln - 0.5
+        self.tank_location = self.de + cg_engine_factor * self.ln - 0.5
+
+    def pie_chart(self, plot):
+        data = {'OEW': self.OEW, 'Battery': self.battery, 'Hydrogen': self.hydrogen,
+                'Payload': self.MP}  # how is fuel weight OEW - Wpayload
+        piechart(data, plot, self.name)
+
 
     @property
     def MAC(self):
