@@ -355,5 +355,5 @@ if __name__ == "__main__":
     CLalphah = Fokker.C_L_alpha_h()
     x_ac = Fokker.x_ac(ac_wing_contribution_c, CLalphaAh)
     deda = Fokker.de_dalpha(Fokker.sweep(0.25), CLalphaW)
-    print(deda)
-    print(4/(Fokker.A+2))
+    # print(deda)
+    # print(4/(Fokker.A+2))

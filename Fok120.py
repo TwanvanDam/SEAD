@@ -69,10 +69,11 @@ class Coeff:
 
         self.MZFW = 35830  # Max zero fuel weight
         self.MRW = 43320  # Max ramp weight
-        self.MTOW = 43090  # Max take of weight
+        self.oldMTOW = 43090  # Max take of weight
         self.MLW = 38780  # Max landing weight
-        self.OEW = 24593 + (12+14-14.77-9.12)*self.MTOW/100
+        self.OEW = 24593 + (12+14-14.77-9.12)*self.oldMTOW/100
         self.MP = 11108  # Max payload
+        self.MTOW = self.OEW +self.MP + 500 + 900
 
         ###Loading
         self.T = 61607 * 2  # Thrust N

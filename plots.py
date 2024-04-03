@@ -199,7 +199,9 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:tuple, cargo_hold_locations:tuple,
     :param plot: Boolean to determine if a plot should be displayed
     :return: Tuple with the minimum and maximum cg locations in the local coordinate system
     """
+    save_name = name
     if two_plots:
+        save_name = '2plots'
         if name == "Fokker100":
             color = "b"
         elif name == "Fokker120":
@@ -245,7 +247,7 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:tuple, cargo_hold_locations:tuple,
         plt.ylabel("mass [kg]")
         plt.xlabel(r"$x_{cg}$ [mac]")
         plt.legend()
-        plt.savefig("./Plots/potato.pdf")
+        plt.savefig(f"./Plots/potato_{save_name}.pdf")
         plt.show()
     return min_cg, max_cg
 
@@ -257,7 +259,7 @@ def control_stability(x_range, control, stability, stability_static_margin, plot
     plt.hlines(y, np.min(x_range), np.max(x_range),"k","--", label=r'Fokker 100 $S_h/S$')
     plt.axhline(y, cg[0], cg[1], label='Operational CG range', color='g')
     plt.fill_between(x_range+stability_static_margin, stability, facecolor='blue', alpha=0.5, label='Not stable')
-    plt.ylim([0,1*np.max([np.max(stability), np.max(control)])])
+    plt.ylim(0, 0.35)
     plt.xlim([np.min(x_range), np.max(x_range)])
     plt.xlabel(r'$x$ [mac]')
     plt.ylabel(r'$S_h/S$ [-]')
