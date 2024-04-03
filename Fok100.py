@@ -108,7 +108,10 @@ class Coeff:
         piechart(data, plot, self.name)
 
     def loading_diagram(self, show_plot:bool=True,two_plots:bool=False, show_cg_limits:bool=True):
-        cargo_volumes = (self.holdf, self.holda)
+        """Plots the loading diagram of the aircraft \n
+        :param show_plot: Show the plot
+        :param two_plots: Show two plots, select show plot only for the second plot
+        :param show_cg_limits: Show the cg limits"""
         cargo_weights = (self.cargof, self.cargoa)
         cargo_hold_locations = ( 0.3 * self.f_l,0.7 * self.f_l)
         self.cg_range = calc_potato(self.cg_oew, self.OEW, cargo_weights, cargo_hold_locations,

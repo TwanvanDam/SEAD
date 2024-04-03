@@ -112,6 +112,11 @@ class Coeff:
         piechart(data, plot, self.name)
 
     def loading_diagram(self, show_plot:bool=True,two_plots:bool=False, show_cg_limits:bool=True, battery_before_boarding:bool=True):
+        """Plots the loading diagram of the aircraft \n
+        :param show_plot: Show the plot
+        :param two_plots: Show two plots, select show plot only for the second plot
+        :param show_cg_limits: Show the cg limits
+        :param battery_before_boarding: Place the battery in the aircraft before boarding"""
         if battery_before_boarding:
             cargo_volumes = (self.holdf, self.holda)
             cargo_weights = (self.battery, self.cargof, self.cargoa)
