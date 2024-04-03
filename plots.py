@@ -16,9 +16,9 @@ def piechart(data, plot):
 def control_stability(x_range, control, stability, stability_static_margin, plot,y, cg):
     plt.plot(x_range, control, color='red', label='Control')
     plt.fill_between(x_range, control, facecolor='red', alpha=0.5, label='Not controllable')
-    plt.plot(x_range-stability_static_margin, stability, color='blue',label='Stability')
+    plt.plot(x_range, stability, color='blue',label='Stability')
     plt.axhline(y, cg[0], cg[1], label='Operational CG range', color='g')
-    plt.fill_between(x_range, stability, facecolor='blue', alpha=0.5, label='Not stable')
+    plt.fill_between(x_range+stability_static_margin, stability, facecolor='blue', alpha=0.5, label='Not stable')
     plt.ylim([0,1*np.max([np.max(stability), np.max(control)])])
     plt.xlim([np.min(x_range), np.max(x_range)])
     plt.xlabel(r'$x$ [mac]')
@@ -32,6 +32,7 @@ def stability(c: Coeff):
     x = np.arange(0, 1, 0.01)
     a = 1 / (c.C_L_alpha_h() / c.C_L_alpha_Ah(c.C_L_alpha_w()) * (1-c.de_dalpha(c.sweep(0.25), c.C_L_alpha_w())) * c.l_h/c.MAC * c.Vh_V_square()) #TODO downwash 0?
     y  =  a * x - (c.x_ac(0.29, c.C_L_alpha_Ah(c.C_L_alpha_w())) - 0.05) * a
+    print(c.x_ac(0.29, c.C_L_alpha_Ah(c.C_L_alpha_w())))
     return y
 
 def control(c: Coeff):
