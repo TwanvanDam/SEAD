@@ -198,7 +198,7 @@ def stability(c: Coeff,wing_contribution=0.29):
     CLalphaw = c.C_L_alpha_w()
     CLalphah = c.C_L_alpha_h()
     CLalphaAh = c.C_L_alpha_Ah(CLalphaw)
-    deda = c.de_dalpha(c.sweep(0.25), CLalphaw)
+    deda = 0* c.de_dalpha(c.sweep(0.25), CLalphaw)
     x_ac = c.x_ac(wing_contribution, c.C_L_alpha_Ah(CLalphaw))
 
     a = (CLalphah / CLalphaAh) * (1-deda) * (c.l_h/c.MAC) * c.Vh_V_square() #TODO downwash 0?
