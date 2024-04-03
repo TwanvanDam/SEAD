@@ -8,11 +8,11 @@ import numpy as np
 
 def model(coeff100, coeff120, plot):
     ### Pie chart
-    Fokker100 = coeff100(0.77)
-    Fokker120 = coeff120(0.77)
+    Fokker100 = coeff100(0.193)
+    Fokker120 = coeff120(0.193)
     Fokker100.pie_chart(plot)
     Fokker120.pie_chart(plot)
-
+    # print(Fokker120.C_m_ac())
     ### CG calculation
     ### I & II & III
     Fokker100.loading_diagram(plot)
@@ -26,7 +26,7 @@ def model(coeff100, coeff120, plot):
     control_stability(np.arange(0, 1, 0.01), control(coeff120(0.193)), stability(coeff120(0.77)), stability_static_margin, plot, Fokker120.Sht / Fokker120.S, Fokker120.cg_range, Fokker120.name)
 
 if __name__ == '__main__':
-    plot = True
+    plot = False
     model(C100, C120, plot)
     # # print(Fokker.cf * np.cos(np.radians(42))*0.75/3.33 + 1)
     # print(Fokker.b**2 / ((1+Fokker.Swf/Fokker.S*(Fokker.cprimec -1))*Fokker.S))
