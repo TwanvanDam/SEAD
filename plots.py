@@ -23,6 +23,7 @@ def control_stability(x_range, control, stability, stability_static_margin, plot
     plt.xlim([np.min(x_range), np.max(x_range)])
     plt.xlabel(r'$x$ [mac]')
     plt.ylabel(r'$S_h/S$ [-]')
+    plt.grid()
     plt.legend()
     plt.savefig("./Plots/scissor.pdf")
     if plot:
