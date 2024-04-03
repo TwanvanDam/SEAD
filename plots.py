@@ -231,17 +231,17 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:tuple, cargo_hold_locations:tuple,
     else:
         cg_fuel, OEW_fuel, min_cg_fuel, max_cg_fuel = calc_potato_fuel(cg_pass, OEW_pass, Wfuel, tank_location,X_lemac,
                                                                        mac, plot, color=color)
-    min_cg = (min(min_cg_battery, min_cg_cargo,min_cg_pass, min_cg_fuel)-X_lemac)/mac
-    max_cg = (max(max_cg_battery, max_cg_pass,max_cg_cargo, max_cg_fuel)-X_lemac)/mac
+    min_cg = (min(min_cg_battery, min_cg_cargo,min_cg_pass, min_cg_fuel)-X_lemac)/mac - 0.02
+    max_cg = (max(max_cg_battery, max_cg_pass,max_cg_cargo, max_cg_fuel)-X_lemac)/mac + 0.02
     if show_cg_limits:
         if color == None:
             color = "black"
         if name == "Fokker100":
-            plt.axvline(min_cg - 0.02, linestyle="--", color=color,label=f'Operational CG range {name}')
-            plt.axvline(max_cg + 0.02, linestyle="--", color=color)
+            plt.axvline(min_cg, linestyle="--", color=color,label=f'Operational CG range {name}')
+            plt.axvline(max_cg, linestyle="--", color=color)
         elif name == "Fokker120":
-            plt.axvline(min_cg - 0.02, linestyle="-.", color=color,label=f'Operational CG range {name}')
-            plt.axvline(max_cg + 0.02, linestyle="-.", color=color)
+            plt.axvline(min_cg, linestyle="-.", color=color,label=f'Operational CG range {name}')
+            plt.axvline(max_cg, linestyle="-.", color=color)
     if plot:
         plt.grid()
         plt.ylabel("mass [kg]")
