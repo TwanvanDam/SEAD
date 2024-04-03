@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from plots import piechart
+from plots import piechart, calc_potato
+from cgfunc import cg_calc
 
 class Coeff:
     def __init__(self, Mach=np.nan):
@@ -22,6 +23,7 @@ class Coeff:
         self.ln = 4.71  # length nacelle
         self.b_n = 1.58 * 1.3 # nacelle width
         self.door = 4.43
+        self.first_row = 6.56 # first row distance
 
 
         ###Wing
@@ -78,13 +80,13 @@ class Coeff:
         self.WT = self.MTOW / self.T  # Thrust loading = kg/N
 
         ##Cargo
-        self.massp = 85 * 90
+        self.n_pass = 90
+        self.massp = 85 * self.n_pass
         self.maxc = self.MP - self.massp
         self.holdf = 9.5  # volumes hold m3
         self.holda = 7.2
         self.cargof = self.maxc * self.holdf / (self.holdf + self.holda)
         self.cargoa = self.maxc * self.holda / (self.holdf + self.holda)
-
 
         m = self.MTOW
         cg_chord_factor = 0.4
@@ -96,18 +98,34 @@ class Coeff:
                                'fuselage': [0.1929 * m, 0.47 * self.f_l], 'ngear': [0.0047 * m, self.dw],
                                'nacelle': [0.0183 * m, self.de + cg_engine_factor * self.ln],
                                'Prop': [0.14 * m, self.de + cg_engine_factor * self.ln - 0.5]}
+        self.cg_oew = cg_calc({**self.wing_group, **self.fuselage_group})
 
         #Fokker120
         self.battery = 400
         self.batteryx = self.door
         self.hydrogen = 500
-        self.tank_location = self.de + cg_engine_factor * self.ln - 0.5
+        self.tank_location = self.fuselage_group["Prop"][1]
 
     def pie_chart(self, plot):
         data = {'OEW': self.OEW, 'Battery': self.battery, 'Hydrogen': self.hydrogen,
                 'Payload': self.MP}  # how is fuel weight OEW - Wpayload
         piechart(data, plot, self.name)
 
+    def loading_diagram(self, show_plot:bool=True,two_plots:bool=False, show_cg_limits:bool=True, battery_before_boarding:bool=True):
+        if battery_before_boarding:
+            cargo_volumes = (self.holdf, self.holda)
+            cargo_weights = (self.battery, self.cargof, self.cargoa)
+            cargo_hold_locations = (self.batteryx, 0.3 * self.f_l,0.7 * self.f_l)
+            self.cg_range = calc_potato(self.cg_oew, self.OEW, cargo_weights, cargo_hold_locations,
+                    self.massp / self.n_pass, self.first_row, self.tank_location, self.hydrogen, name=self.name, X_lemac=self.LEMAC,
+                                        mac=self.MAC, plot=show_plot, two_plots=two_plots, n_rows=18, battery=battery_before_boarding, show_cg_limits=show_cg_limits)
+        else:
+            cargo_volumes = np.array((self.holdf, self.holda))
+            cargo_weights = (self.maxc * cargo_volumes / np.sum(cargo_volumes))
+            cargo_hold_locations = (0.3 * self.f_l, 0.7 * self.f_l)
+            self.cg_range = calc_potato(self.cg_oew, self.OEW, cargo_weights, cargo_hold_locations,
+                    self.massp / self.n_pass, self.first_row, (self.batteryx,self.tank_location), (self.battery, self.hydrogen), name=self.name, X_lemac=self.LEMAC,
+                                        mac=self.MAC, plot=show_plot, two_plots=two_plots, n_rows=18, battery=battery_before_boarding, show_cg_limits=show_cg_limits)
 
     @property
     def MAC(self):

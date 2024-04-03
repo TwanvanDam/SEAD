@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from plots import piechart
+from plots import piechart, calc_potato
 from cgfunc import cg_calc
 
 class Coeff:
@@ -23,6 +23,7 @@ class Coeff:
         self.ln = 4.71  # length nacelle
         self.b_n = 1.58 # nacelle width
         self.door = 4.43 #Distance to door
+        self.first_row = 6.56 # Distance to first row
 
 
         ###Wing
@@ -78,7 +79,8 @@ class Coeff:
         self.WT = self.MTOW / self.T  # Thrust loading = kg/N
 
         ##Cargo
-        self.massp = 85 * 109
+        self.n_pass = 109
+        self.massp = 85 * self.n_pass
         self.maxc = self.MP - self.massp
         self.holdf = 9.5  # volumes hold m3
         self.holda = 7.2
@@ -104,6 +106,15 @@ class Coeff:
     def pie_chart(self, plot):
         data = {'OEW': self.OEW,'Fuel': self.MTOW- self.MP - self.OEW,'Payload': self.MP}  # how is fuel weight OEW - Wpayload
         piechart(data, plot, self.name)
+
+    def loading_diagram(self, show_plot:bool=True,two_plots:bool=False, show_cg_limits:bool=True):
+        cargo_volumes = (self.holdf, self.holda)
+        cargo_weights = (self.cargof, self.cargoa)
+        cargo_hold_locations = ( 0.3 * self.f_l,0.7 * self.f_l)
+        self.cg_range = calc_potato(self.cg_oew, self.OEW, cargo_weights, cargo_hold_locations,
+                    self.massp / self.n_pass, self.first_row, self.tank_location, self.MRW - self.MZFW, name=self.name,
+                                    X_lemac=self.LEMAC, mac=self.MAC,two_plots=two_plots, plot=show_plot,show_cg_limits=show_cg_limits)
+
     @property
     def MAC(self):
         t = self.ct / self.cr  # taper ratio

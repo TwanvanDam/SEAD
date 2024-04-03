@@ -15,18 +15,15 @@ def model(coeff100, coeff120, plot):
 
     ### CG calculation
     ### I & II & III
-    cg_OEW = Fokker100.cg_oew
-    cargo_hold_locations = (0.3 * Fokker100.f_l,0.7 * Fokker100.f_l)
-    first_row = 6.56
-    potato = calc_potato(cg_OEW, Fokker100.OEW, Fokker100.maxc, cargo_hold_locations, (Fokker100.holdf, Fokker100.holda),Fokker100.massp/109,first_row, Fokker100.tank_location, Fokker100.MRW - Fokker100.MZFW, Fokker100.LEMAC, Fokker100.MAC, plot=False,name='Fokker 100')
-    potato = calc_potato(cg_OEW+0.1, Fokker100.OEW, Fokker100.maxc, cargo_hold_locations, (Fokker100.holdf, Fokker100.holda),
-                         Fokker100.massp / 109, first_row, Fokker100.tank_location, Fokker100.MRW - Fokker100.MZFW, Fokker100.LEMAC,
-                         Fokker100.MAC, plot=False, name='Fokker 120')
+    Fokker100.loading_diagram()
+    Fokker120.loading_diagram()
+
+    Fokker100.loading_diagram(two_plots=True, show_cg_limits=True,show_plot=False)
+    Fokker120.loading_diagram(two_plots=True ,show_cg_limits=True, battery_before_boarding=True)
 
     stability_static_margin = 0.05
-    control_stability(np.arange(0, 1, 0.01), control(coeff100(0.193)), stability(coeff100(0.77)), stability_static_margin, plot, Fokker100.Sht/Fokker100.S, potato, Fokker100.name)
-    control_stability(np.arange(0, 1, 0.01), control(coeff120(0.193)), stability(coeff120(0.77)),
-                      stability_static_margin, plot, Fokker120.Sht / Fokker120.S, potato, Fokker120.name)
+    #control_stability(np.arange(0, 1, 0.01), control(coeff100(0.193)), stability(coeff100(0.77)), stability_static_margin, plot, Fokker100.Sht/Fokker100.S, potato, Fokker100.name)
+    #control_stability(np.arange(0, 1, 0.01), control(coeff120(0.193)), stability(coeff120(0.77)), stability_static_margin, plot, Fokker120.Sht / Fokker120.S, potato, Fokker120.name)
 
 if __name__ == '__main__':
     plot = True
