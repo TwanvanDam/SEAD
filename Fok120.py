@@ -18,8 +18,8 @@ class Coeff:
         self.dwing = 14.25  # Distance nose Cr wing
         self.de = 21.9  # Distance front engine
         self.ln = 4.71  # length nacelle
-        self.b_n = 1.58 # nacelle width
-        self.door = 4.43 #Distance to door
+        self.b_n = 1.58 * 1.3 # nacelle width
+        self.door = 4.43
 
 
         ###Wing
@@ -82,16 +82,23 @@ class Coeff:
         self.cargof = self.maxc * self.holdf / (self.holdf + self.holda)
         self.cargoa = self.maxc * self.holda / (self.holdf + self.holda)
 
+
         m = self.MTOW
         cg_chord_factor = 0.4
         cg_engine_factor = 0.5
-        self.wing_group = {'Wing': [0.1477 * m, self.LEMAC + cg_chord_factor * self.MAC],
+        self.wing_group = {'Wing': [0.12 * m, self.LEMAC + cg_chord_factor * self.MAC],
                            'lgear': [0.0271 * m, self.dw + self.wb]}
         self.fuselage_group = {'Htail': [0.0137 * m, self.LEMACH + cg_chord_factor * self.MACH],
                                'Vtail': [0.0095 * m, self.LEMACV + cg_chord_factor * self.MACV],
                                'fuselage': [0.1929 * m, 0.47 * self.f_l], 'ngear': [0.0047 * m, self.dw],
                                'nacelle': [0.0183 * m, self.de + cg_engine_factor * self.ln],
-                               'Prop': [0.0912 * m, self.de + cg_engine_factor * self.ln]}
+                               'Prop': [0.14 * m, self.de + cg_engine_factor * self.ln - 0.5]}
+
+        #Fokker120
+        self.battery = 400
+        self.batteryx = self.door
+        self.hydrogen = 500
+        self.hydrogenx = self.de + cg_engine_factor * self.ln - 0.5
 
     @property
     def MAC(self):
@@ -309,6 +316,7 @@ class Coeff:
         lambdaq = self.sweep(0.25)
         CL = CL0 + deltaclmax
         deltacm4 = mu2 * (-mu1 * deltaclmax * cprimec - (CL + deltaclmax*(1-swfs)) /8 *cprimec * (cprimec-1)) + 0.7 * A / (1+2/A) * mu3 * deltaclmax * np.tan(lambdaq)
+        deltacm4 *= 1.2
         cmac = deltacm4 - CL * (0.25 - self.x_ac(0.27, self.C_L_alpha_Ah(self.C_L_alpha_w())))
         if np.isnan(cmac):
             raise ValueError("Not all values are defined")
