@@ -185,7 +185,7 @@ def calc_potato_fuel(cg_0:float, OEW:float, Wfuel, tank_location, X_lemac:float=
     return cg_fuel[-1], OEW_fuel[-1], min_cg, max_cg
 
 def calc_potato(cg_0:float, OEW:float, Wcargo:tuple, cargo_hold_locations:tuple, Wpass:float,
-                first_row:float,tank_location:tuple,Wfuel:tuple, name:str ,X_lemac:float=0, mac:float=1,plot:bool=True,two_plots:int=0, show_cg_limits:bool=True,
+                first_row:float,tank_location:tuple,Wfuel:tuple, name:str ,X_lemac:float=15.753647838482614, mac:float=3.6818348623853216,plot:bool=True,two_plots:int=0, show_cg_limits:bool=True,
                 n_rows=22, pitch=32, boarding_order=("windows", "aisles", "middle"), battery=False) -> tuple:
     """This function calculates the loading diagram of the aircraft with the given inputs and returns the minimum and maximum cg locations.
     :param cg_0: initial cg location at OEW measured from front of aircraft
@@ -199,7 +199,9 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:tuple, cargo_hold_locations:tuple,
     :param plot: Boolean to determine if a plot should be displayed
     :return: Tuple with the minimum and maximum cg locations in the local coordinate system
     """
+    save_name = name
     if two_plots:
+        save_name = '2plots'
         if name == "Fokker100":
             color = "b"
         elif name == "Fokker120":
@@ -229,26 +231,23 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:tuple, cargo_hold_locations:tuple,
     else:
         cg_fuel, OEW_fuel, min_cg_fuel, max_cg_fuel = calc_potato_fuel(cg_pass, OEW_pass, Wfuel, tank_location,X_lemac,
                                                                        mac, plot, color=color)
-    min_cg = (min(min_cg_battery, min_cg_cargo,min_cg_pass, min_cg_fuel)-X_lemac)/mac
-    max_cg = (max(max_cg_battery, max_cg_pass,max_cg_cargo, max_cg_fuel)-X_lemac)/mac
+    min_cg = (min(min_cg_battery, min_cg_cargo,min_cg_pass, min_cg_fuel)-X_lemac)/mac - 0.02
+    max_cg = (max(max_cg_battery, max_cg_pass,max_cg_cargo, max_cg_fuel)-X_lemac)/mac + 0.02
     if show_cg_limits:
         if color == None:
             color = "black"
         if name == "Fokker100":
-            plt.axvline(min_cg - 0.02, linestyle="--", color=color,label=f'Operational CG range {name}')
-            plt.axvline(max_cg + 0.02, linestyle="--", color=color)
+            plt.axvline(min_cg, linestyle="--", color=color,label=f'Operational CG range {name}')
+            plt.axvline(max_cg, linestyle="--", color=color)
         elif name == "Fokker120":
-            plt.axvline(min_cg - 0.02, linestyle="-.", color=color,label=f'Operational CG range {name}')
-            plt.axvline(max_cg + 0.02, linestyle="-.", color=color)
-    if two_plots:
-        name = "two_plots"
-
+            plt.axvline(min_cg, linestyle="-.", color=color,label=f'Operational CG range {name}')
+            plt.axvline(max_cg, linestyle="-.", color=color)
     if plot:
         plt.grid()
         plt.ylabel("mass [kg]")
         plt.xlabel(r"$x_{cg}$ [mac]")
         plt.legend()
-        plt.savefig(f"./Plots/potato_{name}.pdf")
+        plt.savefig(f"./Plots/potato_{save_name}.pdf")
         plt.show()
     return min_cg, max_cg
 
@@ -260,7 +259,7 @@ def control_stability(x_range, control, stability, stability_static_margin, plot
     plt.hlines(y, np.min(x_range), np.max(x_range),"k","--", label=r'Fokker 100 $S_h/S$')
     plt.axhline(y, cg[0], cg[1], label='Operational CG range', color='g')
     plt.fill_between(x_range+stability_static_margin, stability, facecolor='blue', alpha=0.5, label='Not stable')
-    plt.ylim([0,1*np.max([np.max(stability), np.max(control)])])
+    plt.ylim(0, 0.35)
     plt.xlim([np.min(x_range), np.max(x_range)])
     plt.xlabel(r'$x$ [mac]')
     plt.ylabel(r'$S_h/S$ [-]')

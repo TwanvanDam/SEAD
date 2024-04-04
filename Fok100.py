@@ -216,6 +216,7 @@ class Coeff:
         fuselage_contribution2_c = (0.273 / (1 + taper)) * ((b_f * c_g * (b - b_f)) / (c * c * (b + 2.15 * b_f))) * np.tan(
             sweep25)
         nacelles_contribution_c = 2 * ((k_n * b_n * b_n * l_n) / (S * c * C_L_alpha_Ah))
+        # print(wing_contribution_c, fuselage_contribution1_c+ fuselage_contribution2_c, nacelles_contribution_c, wing_contribution_c + fuselage_contribution1_c + fuselage_contribution2_c + nacelles_contribution_c)
         return (wing_contribution_c + fuselage_contribution1_c + fuselage_contribution2_c + nacelles_contribution_c)
 
 
@@ -294,10 +295,10 @@ class Coeff:
             raise ValueError("Not all values are defined")
         return result
 
-    def C_m_ac(self, cm0 =-0.067, CL0=0.647):
+    def C_m_ac(self, cm0 =-0.08, CL0=0.647):
         return self.C_m_ac_w(cm0) + self.C_m_ac_fus(CL0) + self.C_m_ac_fl(CL0)
 
-    def C_m_ac_w(self, cm0=-0.067):
+    def C_m_ac_w(self, cm0=-0.08):
         A = self.A
         sweep25 = self.sweep(0.25)
         result = cm0 * A * np.cos(sweep25)**2 / (A + 2* np.cos(sweep25))
@@ -355,5 +356,3 @@ if __name__ == "__main__":
     CLalphah = Fokker.C_L_alpha_h()
     x_ac = Fokker.x_ac(ac_wing_contribution_c, CLalphaAh)
     deda = Fokker.de_dalpha(Fokker.sweep(0.25), CLalphaW)
-    print(deda)
-    print(4/(Fokker.A+2))
