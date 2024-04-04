@@ -310,7 +310,7 @@ class Coeff:
             raise ValueError("Not all values are defined")
         return result
 
-    def C_m_ac(self, cm0 =-0.08, CL0=0.647):
+    def C_m_ac(self, cm0 =-0.08, CL0=0.464):
         return self.C_m_ac_w(cm0) + self.C_m_ac_fus(CL0) + self.C_m_ac_fl(CL0)
 
     def C_m_ac_w(self, cm0=-0.08):
@@ -328,7 +328,7 @@ class Coeff:
         result = CLA - CLH
         return result
 
-    def C_m_ac_fus(self, CL0=0.647):
+    def C_m_ac_fus(self, CL0=0.464):
         bf = self.f_diameter
         lf = self.f_l
         S = self.S
@@ -348,7 +348,8 @@ class Coeff:
         swfs = self.Swf / self.S
         A = self.A
         lambdaq = self.sweep(0.25)
-        CL = CL0 + deltaclmax
+        deltaa = -15 * self.Swf / self.S * np.cos(self.sweep(0.75))
+        CL = CL0 + 2 * np.pi * (0 - (-6.19 + deltaa) * np.pi / 180)
         deltacm4 = mu2 * (-mu1 * deltaclmax * cprimec - (CL + deltaclmax*(1-swfs)) /8 *cprimec * (cprimec-1)) + 0.7 * A / (1+2/A) * mu3 * deltaclmax * np.tan(lambdaq)
         deltacm4 *= 1.2
         cmac = deltacm4 - CL * (0.25 - self.x_ac(0.27, self.C_L_alpha_Ah(self.C_L_alpha_w())))
