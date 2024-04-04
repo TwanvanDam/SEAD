@@ -240,12 +240,15 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:tuple, cargo_hold_locations:tuple,
         elif name == "Fokker120":
             plt.axvline(min_cg - 0.02, linestyle="-.", color=color,label=f'Operational CG range {name}')
             plt.axvline(max_cg + 0.02, linestyle="-.", color=color)
+    if two_plots:
+        name = "two_plots"
+
     if plot:
         plt.grid()
         plt.ylabel("mass [kg]")
         plt.xlabel(r"$x_{cg}$ [mac]")
         plt.legend()
-        plt.savefig("./Plots/potato.pdf")
+        plt.savefig(f"./Plots/potato_{name}.pdf")
         plt.show()
     return min_cg, max_cg
 
