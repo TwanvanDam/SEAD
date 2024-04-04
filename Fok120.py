@@ -108,8 +108,7 @@ class Coeff:
         self.tank_location = self.fuselage_group["Prop"][1]
 
     def pie_chart(self, plot):
-        data = {'OEW': self.OEW, 'Battery': self.battery, 'Hydrogen': self.hydrogen,
-                'Payload': self.MP}  # how is fuel weight OEW - Wpayload
+        data = {'OEW': self.OEW, 'Hydrogen': self.hydrogen,'Payload': self.MP, 'Battery': self.battery}  # how is fuel weight OEW - Wpayload
         piechart(data, plot, self.name)
 
     def loading_diagram(self, show_plot:bool=True,two_plots:bool=False, show_cg_limits:bool=True, battery_before_boarding:bool=True):

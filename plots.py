@@ -5,9 +5,16 @@ import cgfunc
 
 def piechart(data, plot, name):
     categories, weights = list(data.keys()) ,list(data.values())
-
+    explode = np.zeros_like(weights)
+    for i in range(len(weights)):
+        if categories[i] == 'Battery' or categories[i] == 'Hydrogen':
+            explode[i] = 0.1
+    if np.sum(explode) == 0:
+        startangle = 90
+    else:
+        startangle = 45
     plt.figure()
-    plt.pie(weights, labels=categories, autopct=lambda p: '{:,.0f} [kg]  \n {:.1f}%'.format((p / 100) * sum(weights), p), startangle=90)
+    plt.pie(weights, explode=explode,labels=categories, autopct=lambda p: '{:,.0f} [kg] {:.1f}%'.format((p / 100) * sum(weights), p), startangle=startangle, labeldistance=.6,pctdistance=1.35)
     plt.axis('equal')
     plt.title(f'Distribution of weights of {name}')
     plt.savefig(f"./Plots/piechart_{name}.pdf")
@@ -169,11 +176,15 @@ def calc_potato_fuel(cg_0:float, OEW:float, Wfuel, tank_location, X_lemac:float=
         min_cg = np.min([min_cg, *cg_fuel])
         max_cg = np.max([max_cg, *cg_fuel])
         if color == None:
+            print(text)
             if text == "battery":
                 name = "battery"
+            elif text == "hydrogen":
+                name = "hydrogen"
             else:
                 name = "fuel"
             plt.plot(cgfunc.convert_global_xlemac(cg_fuel,X_lemac,mac), OEW_fuel, label=name)
+
         elif text == "battery":
             plt.plot(cgfunc.convert_global_xlemac(cg_fuel, X_lemac, mac), OEW_fuel, color=color)
         else:
@@ -226,11 +237,13 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:tuple, cargo_hold_locations:tuple,
         cg_battery, OEW_battery, min_cg_battery, max_cg_battery = calc_potato_fuel(cg_pass, OEW_pass, Wfuel[0], tank_location[0], X_lemac,
                                                                        mac, plot, color=color, text="battery")
         cg_fuel, OEW_fuel, min_cg_fuel, max_cg_fuel = calc_potato_fuel(cg_battery, OEW_battery, Wfuel[1], tank_location[1], X_lemac,
-                                                                       mac, plot, color=color)
-
+                                                                       mac, plot, color=color, text="hydrogen")
     else:
+        if name == "Fokker120":
+            text = "hydrogen"
+        else: text = None
         cg_fuel, OEW_fuel, min_cg_fuel, max_cg_fuel = calc_potato_fuel(cg_pass, OEW_pass, Wfuel, tank_location,X_lemac,
-                                                                       mac, plot, color=color)
+                                                                       mac, plot, color=color, text=text)
     min_cg = (min(min_cg_battery, min_cg_cargo,min_cg_pass, min_cg_fuel)-X_lemac)/mac - 0.02
     max_cg = (max(max_cg_battery, max_cg_pass,max_cg_cargo, max_cg_fuel)-X_lemac)/mac + 0.02
     if show_cg_limits:
@@ -246,19 +259,20 @@ def calc_potato(cg_0:float, OEW:float, Wcargo:tuple, cargo_hold_locations:tuple,
         plt.grid()
         plt.ylabel("mass [kg]")
         plt.xlabel(r"$x_{cg}$ [mac]")
-        plt.legend()
+        plt.legend(fontsize= 'small')
         plt.savefig(f"./Plots/potato_{save_name}.pdf")
         plt.show()
     return min_cg, max_cg
 
 
-def control_stability(x_range, control, stability, stability_static_margin, plot,y, cg, name):
+def control_stability(x_range, control, stability, stability_static_margin, plot,y, cg, name, neutral_stability=None):
     plt.plot(x_range, control, color='red', label='Control')
     plt.fill_between(x_range, control, facecolor='red', alpha=0.5, label='Not controllable')
     plt.plot(x_range, stability, color='blue',label='Stability')
-    plt.hlines(y, np.min(x_range), np.max(x_range),"k","--", label=r'Fokker 100 $S_h/S$')
+    plt.hlines(y, np.min(x_range), np.max(x_range),"k","-.", label=r'Fokker 100 $S_h/S$')
     plt.axhline(y, cg[0], cg[1], label='Operational CG range', color='g')
     plt.fill_between(x_range+stability_static_margin, stability, facecolor='blue', alpha=0.5, label='Not stable')
+    plt.plot(x_range + stability_static_margin, stability, linestyle="--", color='blue', label='Neutral stability')
     plt.ylim(0, 0.35)
     plt.xlim([np.min(x_range), np.max(x_range)])
     plt.xlabel(r'$x$ [mac]')
