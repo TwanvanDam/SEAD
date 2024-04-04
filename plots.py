@@ -176,7 +176,7 @@ def calc_potato_fuel(cg_0:float, OEW:float, Wfuel, tank_location, X_lemac:float=
         min_cg = np.min([min_cg, *cg_fuel])
         max_cg = np.max([max_cg, *cg_fuel])
         if color == None:
-            print(text)
+            # print(text)
             if text == "battery":
                 name = "battery"
             elif text == "hydrogen":
@@ -296,7 +296,7 @@ def stability(c,wing_contribution=0.29):
     y  =  x/a - (x_ac - 0.05)/a
     return y
 
-def control(c, wing_contribution=0.27):
+def control(c, wing_contribution=0.28):
     x = np.arange(0, 1, 0.01)
     a = 1 / ((-0.8 * c.l_h * c.Vh_V_square())/(c.C_L_AminH() * c.MAC))
     y = a * x + (c.C_m_ac()/c.C_L_AminH() - c.x_ac(wing_contribution, c.C_L_alpha_Ah(c.C_L_alpha_w()))) * a
