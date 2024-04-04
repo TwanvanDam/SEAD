@@ -306,11 +306,11 @@ class Coeff:
             raise ValueError("Not all values are defined")
         return result
 
-    def C_L_AminH(self):
-        CLA = 9.81 * self.MTOW / (0.5* 1.225 * self.S * (self.M * np.sqrt(1.4 * 287 * 288.15))**2)
-        CLH = - 0.8 * self.Sht / self.S * self.Vh_V_square()
-        result = (CLH - self.C_m_ac())/(0.044 - self.x_ac(0.27, self.C_L_alpha_Ah(self.C_L_alpha_w())))
-        result = CLA - CLH
+    def C_L_AminH(self,cg=0.474):
+        cma = self.C_m_ac()
+        xac = self.x_ac(0.28, self.C_L_alpha_Ah(self.C_L_alpha_w()))
+        shlhsc = self.Sht * self.l_h / (self.S * self.MAC)
+        result = self.MAC/(cg-xac) * (-0.8*shlhsc - cma)
         return result
 
     def C_m_ac_fus(self, CL0=0.464):

@@ -9,8 +9,8 @@ import numpy as np
 
 def model(coeff100, coeff120, plot):
     ### Pie chart
-    Fokker100 = coeff100(0.77)
-    Fokker120 = coeff120(0.77)
+    Fokker100 = coeff100(0.193)
+    Fokker120 = coeff120(0.193)
     Fokker100.pie_chart(plot)
     Fokker120.pie_chart(plot)
     # print(Fokker120.C_m_ac())
